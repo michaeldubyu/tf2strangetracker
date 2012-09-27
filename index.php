@@ -195,14 +195,11 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
 								echo "</div>";						
 							echo "</div>";
 							
-						}
-						else { 
-							echo "<span id='no_data'>Sorry! This user has requested that their data remain private.</span>";
-						}
+						}else{
+                             echo "<span id='no_data'>Sorry! This user has requested that their data remain private.</span>";
+                        }
                         $mysqli->close();                        
-                    }  
-			else echo "<span id='no_data'>Sorry! This user has requested that their data remain private.</span>";
- 
+                    }   
                         echo '</div>';
                     echo '</div>';
                 echo '</div>';
@@ -216,13 +213,13 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
             {//normal render
                 render_backpack($backpack,$schema,$steamid);
                 //render legend and info
-                echo "<div class='sidebar'>";
+                /*echo "<div class='sidebar'>";
                     echo '<h3>for your information</h3>';
                     echo '<img src="/lib/tracking_explained.png" \><BR \><BR \>';
                     echo '<span>Click each item for additional details. If it is a strange item, you will have the option
                     to begin tracking it to see statistics of its performance over time. See if you can make the <a style="text-decoration:underline;" href="index.php?p=top1">top 50!<a/><BR \><BR \>
                     You can also <a style="text-decoration:underline;" href="index.php?p=usercp">log in</a> to set all strange weapons to be tracked, or manage which item statistics will be publically available or tracked.</span>';
-                echo "</div>";
+                echo "</div>";*/
                 
                 echo '</div>';
                 //render_ads();
@@ -362,7 +359,7 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
 	else
     {
         render_plain_header();
-        echo "<p id='error>Invalid Community ID or response from Steam Servers. Please try again!</p>";
+        echo "<p id='error'>Invalid Community ID or response from Steam Servers. Please try again!</p>";
         render_footer();
     }
 	

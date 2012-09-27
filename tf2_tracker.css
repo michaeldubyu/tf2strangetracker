@@ -2,7 +2,7 @@ body
 {
 	background : #1A1A1A;
 	font-family : "TF2 Build", Helvetica, Arial; 
-  	background-image:url('lib/bg.png');
+  	!background-image:url('lib/bg.png');
     z-index:-1;
 	float:left;
 	width:100%;
@@ -35,16 +35,19 @@ div.privacy_form
 	color: #787876;
 	padding-left:40px;
 	padding-top:40px;
-	padding-bottom:40px;
+	padding-bottom:30px;
+    margin-left:auto;
+    margin-right:auto;
 }
 
 div.privacy_form > form
 {
 	width: 1300px;
-	background: #2D2828;
+	height: 150px;
+    background: #2D2828;
 	border-radius: 8px;
-	padding-top: 15px;
-	padding-left: 10px;
+	padding-top: 20px;
+	padding-left: 20px;
 }
 
 .privacy_form > h2
@@ -54,7 +57,7 @@ div.privacy_form > form
 	width: 500px;
 	text-align: center;
 	border-radius: 8px;
-	padding: 5px;
+	padding: 10px;
 }
 
 #sub
@@ -66,9 +69,9 @@ div.privacy_form > form
 
 div.item_page_all
 {
-	background : #1A1A1A;
-	float : left;
-        min-width:1400px;
+    background:#1a1a1a;
+    width:1400px;
+    margin:0px auto;
 }
 
 div.item_desc_all
@@ -76,19 +79,23 @@ div.item_desc_all
     float : left;
     width : 100%;
     margin-top : 10px;
-    margin-left : 10px;
     text-align : center;
     margin-bottom :10px;
+    border-radius:15px;
+    background:#2d2828;
+    padding-top:10px;
+    padding-bottom:10px;
 }
 
 div.help_content
 {
-    width:1440px;
+    width:1000px;
     min-width:1000px;
     color : #A3A3A3;
     background : #1A1A1A;
-    float:left;
     padding:20px;
+    margin-right:auto;
+    margin-left:auto;
 }
 
 div.help_content h2
@@ -141,12 +148,15 @@ div.answer
 
 div.help_wrapper
 {
-    float : left;
+    min-width:1400px;
+    margin-bottom:20px;
 }
 
 div.stat_all
 {
+    background:#2d2828;
     float : left;
+    border-radius:18px;
 }
 
 div.title
@@ -234,7 +244,7 @@ div.graph_wep_performance
 {
     width : 600px;
     height : 500px;
-    margin-left : 150px;
+    margin-left : 125px;
     float : left;
 }
 
@@ -248,6 +258,7 @@ div.top10_contrib
 .top10_contrib h3
 {
     text-align:left;
+    font-size:20px;
 }
 .contrib_table
 {
@@ -297,8 +308,9 @@ div.all_graphs
 div.form
 {
     background: #1A1A1A;
-    float: left;
     width:1400px;
+    margin-left:auto;
+    margin-right:auto;
 }
 
 #formstyle{
@@ -325,33 +337,35 @@ div.front_stats
 
 div.tf2_backpack_all
 {
-	background : #1A1A1A;
-	float : left;
 	overflow : visible;
     width : 70%;
     min-height : 500px;
     min-width : 1400px;
     max-width:1920px;
+    margin-left:auto;
+    margin-right:auto;
+    background:#1a1a1a;
 }
 
 div.backpack
 {
-    position: relative;
-    background-color: #1A1A1A;
-    float: left;
     width: 920px;
     min-height : 600px;
     margin-top: 20px;
     margin-bottom: 40px;
     display: block;
-    margin-left: 40px;
-    margin-right : 40px
+    margin:0px auto;
+    padding-top:50px;
 }
 
 div.backpack_partition
 {
     width : 920px;
     float : left;
+    background: #2d2828;
+    border-radius:18px;
+    padding:10px;
+    padding-left:20px;
 }
 
 div.sidebar
@@ -398,18 +412,17 @@ div.text
 {
     font-size : 12px;
 	padding : 5px 5px 5px 5px;
+    float:left;
 	text-align : center;
-    float : left;
     width:910px;
 	margin-top : 5px;
-    margin-left:40px;
+    margin-left:60px;
 }
 
 div.header
 {
 	position : relative;
 	display : block;
-    float : left;
 	color :  #808080;
     width : 100%;
     height:70px;
@@ -420,7 +433,7 @@ div.header
 	min-width:1400px;
     max-width:1920px;
     overflow : visible;
-    border-bottom:2px solid #2D2828;
+    border-bottom:1px solid #2D2828;
 }
 
 div.nav
@@ -437,7 +450,7 @@ div.no_login_header
     width : 100%;
     height:60px;
 	background : #121010;
-	border-bottom : 2px solid #2D2828;
+	border-bottom : 1px solid #2D2828;
     overflow : hidden;
     min-width:1400px;
     max-width:1920px;
@@ -446,7 +459,7 @@ div.no_login_header
 div.no_login_nav
 {
     overflow: hidden;
-    margin-top: 5px;
+    padding-top: 10px;
     text-align: center;
     cursor: pointer;
     font-size: 40px;
@@ -457,31 +470,41 @@ div.no_login_nav
 
 div.footer
 {
-    width:1400px;
+    width:100%;
     float : left;
     background :#202021;
     color : #787876;
     overflow: display;
+    margin-top:25px;
+    min-width:1400px;
 }
 
 #form
 {
     float :left;
     text-align : center;
-    padding-top : 20px;
+    padding-top : 40px;
     margin-left:75px;
     width:1250px;
     color:#86B5D9;
-    font-size:20px;
+    font-size:25px;
 }
 
 div.control
 {
-	color :  #808080;
-    float : left;
+    width:1200px;
+    height:53px;
+    margin-left:auto;
+    margin-right:auto;
+    display:block;
+}
+
+div.control_wrapper{
     width:100%;
+    min-width:1400px;
     height:53px;
     background:#2d2828;
+    color:grey;
 }
 
 div.sortdrop
@@ -489,7 +512,6 @@ div.sortdrop
 	float: left;
 	width: 150px;
 	font-size: 12px;
-	margin-left: 150px;
     margin-top:5px;
 }
 
@@ -546,10 +568,10 @@ div.top10_right
 
 div.top10_wrapper
 {
-    float : left;
     background: #1a1a1a;
-    overflow : display;
-    min-width:1440px;
+    width:1400px;
+    padding:30px;
+    margin:0px auto;
 }
 
 table.top10
@@ -670,9 +692,11 @@ table.backpack
 
 div #custom_desc
 {
-    margin-top:15px;
-    margin-bottom:15px;
-    margin-left : 5px;
+    font-size: 20px;
+    height:25px;
+    margin: 5px 5px 5px 5px;
+    padding: 5px 5px 5px 5px;
+    text-align:center;
 }
 
 #item_desc
@@ -747,10 +771,9 @@ a:hover
 {
     color : #ff4d4d;
     text-align: center;
-    margin-top: 20px;
+    margin-top: 40px;
     margin-bottom: 20px;
-    width: 1600px;
-
+    width: 100%;
 }
 
 #no_data

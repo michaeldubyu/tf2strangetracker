@@ -45,7 +45,7 @@ function render_backpack($backpack,$schema,$steamid,$online=true)
     @$item_map_cannot_craft = itemmap_filter_defindex_and_node($backpack,"id",$ids,"flag_cannot_craft");   
     $id_map_defindex = map_tf2_allitem_node($backpack,"id",$ids,"defindex"); 
     //$id_map_defindex[$key=id] => value (defindex)
-    echo '<div class="tf2_backpack_all">';
+        echo '<div class="control_wrapper">';
             echo '<div class="control">';    //filter
                 echo '<div class="text">';
                     echo "filter:";
@@ -70,6 +70,9 @@ function render_backpack($backpack,$schema,$steamid,$online=true)
                     echo '</select></center>';                
                 echo '</div>';
             echo '</div>';
+        echo '</div>';
+    
+    echo '<div class="tf2_backpack_all">';
         if ($online==false) echo '<span id="error">WARNING : Steam Community may be down right now. I\'m currently using an older snapshot of your backpack.</span>';
         echo '<div class="backpack">';
                echo '<div class="backpack_partition">';        
@@ -208,7 +211,7 @@ function render_backpack($backpack,$schema,$steamid,$online=true)
 function render_item_desc($steamid,$itemid, $single_quality,$item_image_url,$single_defindex, $single_item_strange_kills, $single_item_name, $single_item_custom_name,$single_item_custom_desc,$single_item_previous_id,$single_item_strange_kills)        
 {
         echo '<div class="item_desc_all">';
-        echo "<a class='back_button' style='text-decoration:underline;' href='index.php?userid={$steamid}'>&lt;&lt;BACK TO BACKPACK</a><BR \>";
+        echo "<a class='back_button' style='text-decoration:underline;' href='index.php?userid={$steamid}'>&lt;&lt;BACK TO BACKPACK</a><br \>";
             echo '<div class="item_page_img">';
                 echo "<img style='margin-left:10px;' height='175' width='175' class='item' id='{$single_quality}' src='{$item_image_url[$single_defindex]}' \>";
             echo '</div>';
@@ -250,7 +253,7 @@ function render_plain_header()
             echo "<a href='$genurl'><img style='margin-top: 5px;margin-right:20px;float: right;' title='Go to your own profile!' height=40 width=40 src='lib/profile.png' \></a>";
 	}
   
-        echo '</div>';
+    echo '</div>';
 }
 
 function render_footer()
@@ -259,11 +262,11 @@ function render_footer()
     include_once ("functions.php");
     echo "<div class='footer'>";
 
-    if (isset($_SESSION['display_name'])) echo "<div id='custom_desc' style = 'font-size:15px; height:25px; margin : 15px 15px 15px 0px;text-align:center;'>POWERED BY STEAM - ALL MARKS ARE PROPERTY OF THEIR RESPECTIVE OWNERS - Thanks for Logging in, $_SESSION[display_name]!</div>";
+    if (isset($_SESSION['display_name'])) echo "<div id='custom_desc'>POWERED BY STEAM - ALL MARKS ARE PROPERTY OF THEIR RESPECTIVE OWNERS - Thanks for Logging in, $_SESSION[display_name]!</div>";
     else if (!isset($_GET['openid_assoc_handle']))
     {
         $genurl = SteamSignIn::genUrl();
-        echo "<div id='custom_desc' style = 'font-size:15px; height:25px; margin : 5px 5px 5px 5px;'><a href='http://www.steampowered.com' >POWERED BY STEAM - </a><a href='$genurl'><img src='/lib/sits_small.png' \></a></div>";
+        echo "<div id='custom_desc'><a href='http://www.steampowered.com' >POWERED BY STEAM - </a><a href='$genurl'><img src='/lib/sits_small.png' \></a></div>";
     }
     else
     {
