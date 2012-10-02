@@ -22,20 +22,143 @@ if (isset($_SESSION['last_activity']) && time() - 1800 > $_SESSION['last_activit
     session_unset();
     session_destroy();
 }
-if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null) 
+if (isset($_GET['tutorial']) && count($_GET)==1){
+
+    include ("functions.php");
+
+    $steamid = "1337";
+    $tutorial = "true";
+  
+    $profile = simplexml_load_file("{$_SERVER['DOCUMENT_ROOT']}/profiles/1337_profile.xml");
+    $backpack = simplexml_load_file("{$_SERVER['DOCUMENT_ROOT']}/backpacks/1337_backpack.xml");
+    $schema = simplexml_load_file("{$_SERVER['DOCUMENT_ROOT']}/lib/schema.xml");				
+
+    $status= $backpack->status;
+	$name = simplexml_load_string($profile->steamID->asXML(),null,LIBXML_NOCDATA);
+	$display_name = strtoupper($name);
+	$user_status = strtolower(simplexml_load_string($profile->onlineState->asXML(),null,LIBXML_NOCDATA));
+	$avatar_full = simplexml_load_string($profile->avatarMedium->asXML(), null, LIBXML_NOCDATA);
+    
+    render_profile_header($steamid,$avatar_full,$user_status,$display_name);	
+    render_backpack($backpack,$schema,$steamid,true,$tutorial);
+    
+    if (isset($_GET['item']) && $_GET['item']!=null){
+    
+                $itemid = $_GET['item'];
+                
+                $item = array();
+                $items[] = $itemid;
+                $item_defindex = itemmap_filter_defindex_and_node($backpack,"id",$items,"defindex");
+                $single_defindex = $item_defindex[$itemid];
+                                
+                $defindex = array();
+                $defindex[] = $item_defindex[$itemid];
+                $item_image_url = itemmap_filter_defindex_and_node($schema,"defindex",$defindex,"image_url_large");
+                
+                $item_name = itemmap_filter_defindex_and_node($schema,"defindex",$defindex,"name");
+                $item_quality = itemmap_filter_defindex_and_node($backpack,"id",$items,"quality");
+                $item_custom_name = itemmap_filter_defindex_and_node($backpack,"id",$items,"custom_name");
+                $item_custom_desc = itemmap_filter_defindex_and_node($backpack,"id",$items,"custom_desc");
+                $item_strange_kills = attrmap_filter_defindex_and_node($backpack,$items,"214","value");
+                $item_previous_id = itemmap_filter_defindex_and_node($backpack,"id",$items,"original_id");
+                
+                $single_quality = tf2_get_quality($item_quality[$itemid]);
+				$single_item_name = $item_name[$single_defindex];
+                $single_item_custom_desc = $item_custom_desc[$itemid];
+                $single_item_custom_name = $item_custom_name[$itemid];
+				@$single_item_strange_kills = $item_strange_kills[$itemid];
+                @$single_item_previous_id = $item_previous_id[$itemid];
+                  
+                $single_item_name = str_replace('The ','',$single_item_name);
+                $single_item_name = str_replace('Upgradeable TF_WEAPON_','',$single_item_name);
+
+                echo '<div class="item_page_all clear">';
+                render_item_desc($steamid,$itemid, $single_quality,$item_image_url,$single_defindex, $single_item_strange_kills,$single_item_name, $single_item_custom_name,$single_item_custom_desc,$single_item_previous_id,$single_item_strange_kills);         
+    				echo '<div class="graph_sidebar_wrapper clear">';
+                    echo '<div class="stat_all">';
+                    if ($single_quality=='strange')
+                    {
+                        echo '<div class="title">PERFORMANCE<BR \>';
+                        //if (isset($_SESSION['steamID']) && $_GET['userid']==$_SESSION['steamID']) echo "<span id='not_public'>Note : This data is visible to only you.</span>";
+                        echo '</div>';
+                        echo '<div class="graph_all clear">';
+                        
+                        include_once('scripts/dbconfig.php');
+                        $mysqli = new mysqli($host,$username,$password,$db) or die($mysqli->error);
+                      							
+                        $query = "SELECT * FROM `test_items` WHERE `itemid`=$itemid";
+                        $result = $mysqli->query($query);
+                        $check = "SELECT * from user WHERE `steamid`='$_GET[userid]'";
+                        $re = $mysqli->query($check);
+                        $rows = $re->fetch_assoc();                        
+                                    
+                        if (isset($_GET['track']) && $_GET['track']!=null) echo "<span id='no_data'>Item added. I'll be checking this item every hour and you'll soon able to see more in depth data.</span>";
+                        else echo "<span id='no_data'>No data available for this item. <a href='?userid={$steamid}&item={$itemid}&track=true'>Start tracking?</a></span>";
+						
+                        if ($result->num_rows>0)
+						{
+
+							//show graphs 	                                            							
+							echo "<div class='graph_daily_wrapper'>";
+								echo "<span id='graph_24hrs'><h1 style='text-align:center; color:#86b5d9;'>in the last 24 hours</h1></span>";
+								echo "<div class='graph_daily'><img id='loading' src='lib/spin.gif' />";
+								echo "</div>";						
+							echo "</div>";
+							echo "<div class='graph_weekly_wrapper'>";
+								echo "<span id='graph_weekly'><h1 style='text-align:center; color:#d986b5;'>in the last while</h1></span>";
+								echo "<div class='graph_weekly'><img id='loading' src='lib/spin.gif' />";
+								echo "</div>";						
+							echo "</div>";
+							
+						}
+                        $mysqli->close();                        
+                    }   
+                    echo '</div>';
+                    echo '</div>';
+                    echo '<div class="sidebar">';
+                       echo "<div id='admin_title'>OPTIONS</div>"; 
+                        echo "<ul id='admin_list'>";
+                        if ($result->num_rows>0){
+                            if (isset($_SESSION['steamID']) && $_SESSION['steamID']==$_GET['userid']){
+                                 echo "<li>STOP TRACKING ITEM</li>"; 
+                            }else{
+                                echo "<li id='not_logged_in'>STOP TRACKING ITEM</li>";
+                            }
+                            echo "<li>EXPORT AS CSV</li>";     
+                        }
+                       echo "</ul>";
+                    if (!isset($_SESSION['steamID']) || $_SESSION['steamID']!=$_GET['userid']){
+                        include_once("steamsignin.php");
+                        $genurl = SteamSignIn::genUrl();
+                        echo "<span id='admin_info'>Some options are not available to you because you are not the owner of this item. 
+                             If you are, you can <a href='$genurl'>log in</a> to administrate your items!</span>";
+                    } 
+                   echo '</div>';
+                echo '</div>';
+                echo '</div>';
+                //render_ads();
+    }
+    render_footer();        
+}
+else if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null) 
 {
     //display backpack for this user
     include ("functions.php");
     $web_api_status = true;
-    $id = $_GET['userid'];
+    $id = strip_tags($_GET['userid']);
     $id = trim($id);
-    $profile = get_steam_profile_xml($id);
+    
+    $valid = array('-','_');
+
+    if (!ctype_alnum(str_replace($valid,'',$id))) $profile = null;
+    else $profile = get_steam_profile_xml($id);
+    
     if (isset($profile->steamID64) && $profile->steamID64 != null) 
     {
 		$steamid = get_steam_id_64($id);
 		if (isset(get_tf2_backpack_xml($steamid)->status)) $status=get_tf2_backpack_xml($steamid)->status;
 		else $web_api_status=false;
-		if ($web_api_status==true)
+		if ($web_api_status==true && $status!='15')
 		{
             $profile = save_xml($profile,"/profiles/{$steamid}_profile.xml");
 			$name = simplexml_load_string($profile->steamID->asXML(),null,LIBXML_NOCDATA);
@@ -106,7 +229,7 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
                 $single_item_name = str_replace('The ','',$single_item_name);
                 $single_item_name = str_replace('Upgradeable TF_WEAPON_','',$single_item_name);
 
-                echo '<div class="item_page_all">';
+                echo '<div class="item_page_all clear">';
                 render_item_desc($steamid,$itemid, $single_quality,$item_image_url,$single_defindex, $single_item_strange_kills,$single_item_name, $single_item_custom_name,$single_item_custom_desc,$single_item_previous_id,$single_item_strange_kills);         
                 if ($single_item_previous_id!=$itemid) 
 				{	
@@ -128,13 +251,14 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
 					mysqli_query($mysqli_mod,$u);
 					mysqli_close($mysqli_mod);
 				}
+    				echo '<div class="graph_sidebar_wrapper clear">';
                     echo '<div class="stat_all">';
                     if ($single_quality=='strange')
                     {
                         echo '<div class="title">PERFORMANCE<BR \>';
                         //if (isset($_SESSION['steamID']) && $_GET['userid']==$_SESSION['steamID']) echo "<span id='not_public'>Note : This data is visible to only you.</span>";
                         echo '</div>';
-                        echo '<div class="graph_all">';
+                        echo '<div class="graph_all clear">';
                         
                         //check if user is being tracked
                         //if so, check for data, return if exists
@@ -173,7 +297,7 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
                                     
                                     echo "<span id='no_data'>Item added. I'll be checking this item every hour and you'll soon able to see more in depth data.</span>";
                                 }
-                            }else echo "<span id='no_data'>No data available for this item. <a href='index.php?userid={$steamid}&item={$itemid}&track=true'>Start tracking?</a></span>";
+                            }else echo "<span id='no_data'>No data available for this item. <a href='?userid={$steamid}&item={$itemid}&track=true'>Start tracking?</a></span>";
 
 						}
                         else if (($stat_privacy==0 || (isset($_SESSION['steamID']) && $_GET['userid']==$_SESSION['steamID']))  && $result->num_rows>0)
@@ -181,16 +305,16 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
 
 							//show graphs 	                                            							
 							echo "<div class='graph_daily_wrapper'>";
-								echo "<span id='graph_24hrs'><h1 style='text-align:center; color:#86b5d9;width: 1000px;'>in the last 24 hours</h1></span>";
+								echo "<span id='graph_24hrs'><h1 style='text-align:center; color:#86b5d9;'>in the last 24 hours</h1></span>";
 								echo "<div class='graph_daily'><img id='loading' src='lib/spin.gif' />";
 								echo "</div>";						
 							echo "</div>";
-							echo '<div class="graph_sidebar"><h3>FOR YOUR INFORMATION</h3><BR \>
+							/*echo '<div class="graph_sidebar"><h3>FOR YOUR INFORMATION</h3><BR \>
                                     - all times displayed are UTC<BR \><BR \>
                                     - if there is a point missing, most likely I could not contact the steam api<BR \><BR \>';
-							echo '</div>';
+							echo '</div>';*/
 							echo "<div class='graph_weekly_wrapper'>";
-								echo "<span id='graph_weekly'><h1 style='text-align:center; color:#d986b5;width: 1000px;'>in the last while</h1></span>";
+								echo "<span id='graph_weekly'><h1 style='text-align:center; color:#d986b5;'>in the last while</h1></span>";
 								echo "<div class='graph_weekly'><img id='loading' src='lib/spin.gif' />";
 								echo "</div>";						
 							echo "</div>";
@@ -202,26 +326,35 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
                     }   
                         echo '</div>';
                     echo '</div>';
+                    echo '<div class="sidebar">';
+                       echo "<div id='admin_title'>OPTIONS</div>"; 
+                        echo "<ul id='admin_list'>";
+                        if ($result->num_rows>0){
+                            if (isset($_SESSION['steamID']) && $_SESSION['steamID']==$_GET['userid']){
+                                 echo "<li>STOP TRACKING ITEM</li>"; 
+                            }else{
+                                echo "<li id='not_logged_in'>STOP TRACKING ITEM</li>";
+                            }
+                            echo "<li>EXPORT AS CSV</li>";     
+                        }
+                       echo "</ul>";
+                    if (!isset($_SESSION['steamID']) || $_SESSION['steamID']!=$_GET['userid']){
+                        include_once("steamsignin.php");
+                        $genurl = SteamSignIn::genUrl();
+                        echo "<span id='admin_info'>Some options are not available to you because you are not the owner of this item. 
+                             If you are, you can <a href='$genurl'>log in</a> to administrate your items!</span>";
+                    } 
+                   echo '</div>';
+                echo '</div>';
                 echo '</div>';
                 //render_ads();
                 render_footer();
-                        echo '<div class="modal"></div>';
 
 
             }
-            else
+            else if ($backpackxml->result!='15')
             {//normal render
-                render_backpack($backpack,$schema,$steamid);
-                //render legend and info
-                /*echo "<div class='sidebar'>";
-                    echo '<h3>for your information</h3>';
-                    echo '<img src="/lib/tracking_explained.png" \><BR \><BR \>';
-                    echo '<span>Click each item for additional details. If it is a strange item, you will have the option
-                    to begin tracking it to see statistics of its performance over time. See if you can make the <a style="text-decoration:underline;" href="index.php?p=top1">top 50!<a/><BR \><BR \>
-                    You can also <a style="text-decoration:underline;" href="index.php?p=usercp">log in</a> to set all strange weapons to be tracked, or manage which item statistics will be publically available or tracked.</span>';
-                echo "</div>";*/
-                
-                echo '</div>';
+                render_backpack($backpack,$schema,$steamid,true,false);
                 //render_ads();
                 render_footer();
                 /*info panel - IT'S DEAD JUST LET IT DIE - 
@@ -230,7 +363,9 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
         }
 		else 
         {//steam community is offline or response is bad
-			if (file_exists("{$_SERVER['DOCUMENT_ROOT']}/profiles/{$steamid}_profile.xml") && file_exists("{$_SERVER['DOCUMENT_ROOT']}/backpacks/{$steamid}_backpack.xml"))
+			$profilexml = "{$_SERVER['DOCUMENT_ROOT']}/profiles/{$steamid}_profile.xml";
+            $backpackxml = "{$_SERVER['DOCUMENT_ROOT']}/backpacks/{steamid}_backpack.xml";
+            if (file_exists($profilexml) && file_exists($backpackxml) && $backpackxml->result!='15')
 			{
 				$profile = simplexml_load_file("{$_SERVER['DOCUMENT_ROOT']}/profiles/{$steamid}_profile.xml");
 				$name = simplexml_load_string($profile->steamID->asXML(),null,LIBXML_NOCDATA);
@@ -274,9 +409,10 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
 					$single_item_name = str_replace('The ','',$single_item_name);
 					$single_item_name = str_replace('Upgradeable TF_WEAPON_','',$single_item_name);
 
-					echo '<div class="item_page_all">';
+					echo '<div class="item_page_all clear">';
 					render_item_desc($steamid,$itemid, $single_quality,$item_image_url,$single_defindex, $single_item_strange_kills,$single_item_name, $single_item_custom_name,$single_item_custom_desc,$single_item_previous_id,$single_item_strange_kills);         
-						echo '<div class="stat_all">';
+						echo '<div class="graph_sidebar_wrapper">';
+                        echo '<div class="stat_all">';
 						if ($single_quality=='strange')
 						{
                             echo '<div class="title">PERFORMANCE</div>';
@@ -299,7 +435,7 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
                                 
                             if ($result->num_rows=='0') //if no data exists, should begin tracking
                             {
-                                echo "<span id='no_data'>No data available for this item. <a href='index.php?userid={$steamid}&item={$itemid}&track=true'>Start tracking?</a></span>";
+                                echo "<span id='no_data'>No data available for this item. <a href='?userid={$steamid}&item={$itemid}&track=true'>Start tracking?</a></span>";
                                 if (isset($_GET['track']) && $_GET['track']=='true')
                                 {//track, iff privacy is set to public
                                     if ($track==0 || (isset($_SESSION['steamID']) && ($_GET['userid']==$_SESSION['steamID']))){
@@ -321,7 +457,7 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
                             {
                                 //show graphs 	                                            							
                                 echo "<div class='graph_daily_wrapper'>";
-                                    echo "<span id='graph_24hrs'><h1 style='text-align:center; color:#86b5d9;width: 1000px;'>in the last 24 hours</h1></span>";
+                                    echo "<span id='graph_24hrs'><h1 style='text-align:center; color:#86b5d9;'>in the last 24 hours</h1></span>";
                                     echo "<div class='graph_daily'><img id='loading' src='lib/spin.gif' />";
                                     echo "</div>";						
                                 echo "</div>";
@@ -330,7 +466,7 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
                                         - if there is a point missing, most likely I could not contact the steam api<BR \><BR \>';
                                 echo '</div>';
                                 echo "<div class='graph_weekly_wrapper'>";
-                                    echo "<span id='graph_weekly'><h1 style='text-align:center; color:#d986b5;width: 1000px;'>in the last while</h1></span>";
+                                    echo "<span id='graph_weekly'><h1 style='text-align:center; color:#d986b5;'>in the last while</h1></span>";
                                     echo "<div class='graph_weekly'><img id='loading' src='lib/spin.gif' />";
                                     echo "</div>";						
                                 echo "</div>";        
@@ -342,16 +478,17 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
 							echo '</div>';
 						echo '</div>';
 					echo '</div>';
+                    echo '</div>';
 					//render_ads();
 					render_footer();
 				}else{
-					render_backpack($backpack,$schema,$steamid,false);
+					render_backpack($backpack,$schema,$steamid,false,false);
                 }
             }
             else
             {
 				render_plain_header();
-				echo "<p id='error'>Steam Community may be currently offline, and I have no offline snapshot of your backpack. Sorry!</p>";
+				echo "<p id='error'>Steam Community may be currently offline, and I have no offline snapshot of your backpack. How unfortunate!<BR \>The owner of this account should also check their privacy settings.</p>";
 				render_footer();
             }
         }
@@ -359,7 +496,7 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
 	else
     {
         render_plain_header();
-        echo "<p id='error'>Invalid Community ID or response from Steam Servers. Please try again!</p>";
+        echo "<p id='error'>Invalid Community ID or response from Steam Servers. Please try again! (CNTL+R)</p>";
         render_footer();
     }
 	
@@ -409,8 +546,9 @@ else if (isset($_GET['p']) && $_GET['p'] != '' && $_GET['p'] != null)
         mysqli_free_result($result_top10);
         mysqli_free_result($result_top25_right);
         
-        echo "<div class='top10_wrapper'>";
+        echo "<div class='top10_wrapper clear'>";
             echo "<div id='top10_title'>TOP 50 WEAPONS CURRENTLY BEING TRACKED</div><BR \>";
+            echo "<div class='top10_table_wrapper clear'>";
             echo "<div class='top10_left'>";
                 echo "<table class='top10'><tbody>";
                 echo "<tr><td id='rank'>rank</td><td id='itemid'>itemid</td><td id='steamid'>steamid</td><td id='kills'>kills</td><td id='weapontype'>weapon type</td></tr>";
@@ -421,10 +559,10 @@ else if (isset($_GET['p']) && $_GET['p'] != '' && $_GET['p'] != null)
                     echo "<td id='rank'>$rank</td>";
                     foreach ($wep as $key => $value)
                     {
-                        if ($key=='itemid') echo "<td><a href='index.php?userid=$wep[steamid]&item=$value'>$value</a></td>";
+                        if ($key=='itemid') echo "<td><a href='?userid=$wep[steamid]&item=$value'>$value</a></td>";
                         if ($key=='item_name') echo "<td id='weapontype'>$value</td>";
                         if ($key=='value') echo "<td id='kills'>$value</td>";
-                        if ($key=='steamid') echo "<td><a href='index.php?userid=$value'>$value</a></td>";
+                        if ($key=='steamid') echo "<td><a href='?userid=$value'>$value</a></td>";
                     }
                     echo "</tr>";
                     $rank++;
@@ -440,37 +578,42 @@ else if (isset($_GET['p']) && $_GET['p'] != '' && $_GET['p'] != null)
                     echo "<td id='rank'>$rank</td>";
                     foreach ($wep as $key => $value)
                     {
-                        if ($key=='itemid') echo "<td><a href='index.php?userid=$wep[steamid]&item=$value'>$value</a></td>";
+                        if ($key=='itemid') echo "<td><a href='?userid=$wep[steamid]&item=$value'>$value</a></td>";
                         if ($key=='item_name') echo "<td id='weapontype'>$value</td>";
                         if ($key=='value') echo "<td id='kills'>$value</td>";
-                        if ($key=='steamid') echo "<td><a href='index.php?userid=$value'>$value</a></td>";
+                        if ($key=='steamid') echo "<td><a href='?userid=$value'>$value</a></td>";
                     }
                     echo "</tr>";
                     $rank++;
                 }
                 echo "</tbody></table>";
             echo "</div>";
+            echo "</div>";            
             //render_ads();
         echo "</div>";
 
     }
     else if ($page=="help")
     {
+        include_once("steamsignin.php");
+        if (!isset($_SESSION['steamID'])) $genurl = SteamSignIn::genUrl();
+        else $genurl = "?userid=$_SESSION[steamID]";
+        
         echo "<div class='help_wrapper'>";
             echo "<div class='help_content'>";
                 echo "<h2>FAQ</h2>";
                 echo "<div class='question'>Q : What is this?</div>";
                 echo "<div class='answer'>A : This site aims to help users view strange kills over time on their, as well as interested parties' weapons.</div><BR \>";
                 echo "<div class='question'>Q : How do I use this?</div>";
-                echo "<div class='answer'>You can click the <a class = 'contentLink' href='index.php'>search</a>
-                button and enter in a steamid, or community ID. If you don't know either of those, you may choose to login
+                echo "<div class='answer'>You can click the <a class = 'contentLink' href=''>search</a>
+                button and enter in a steamid, or community ID. If you don't know either of those, you may choose to <a class='contentLink' href='$genurl'>log in</a>
                 with steam at the bottom of any page.</div><BR \>";
                 echo "<div class='question'>Q : How do I track weapons?</div>";
                 echo "<div class='answer'>You can track anyone's weapons that hasn't been added my database yet by searching
                 for their backpack, then by clicking the weapon - which then shows you the detailed view and data, if it exists. If there is no
                 data to be shown, you'll be able to add it.</div><BR \>";
 				echo "<div class='question'>Q : How can I set my privacy settings? I don't want anyone seeing my strange kill data</div>";
-                echo "<div class='answer'>A : You can <a class='contentLink' href='index.php?usercp'>log in</a> to control your privacy settings.</div><BR \>";                
+                echo "<div class='answer'>A : You can <a class='contentLink' href='?p=$genurl'>log in</a> to control your privacy settings.</div><BR \>";                
 				echo "<div class='question'>Q : Is logging in through steam secure?</div>";
                 echo "<div class='answer'>A : Yes - like all sites, you do not submit any sensitive information to me. Once you've logged in, all steam does
                 is it gives me your steamid - which anyone could obtain easily. The steamid just makes my life easier in helping you find your
@@ -498,7 +641,7 @@ else if (isset($_GET['p']) && $_GET['p'] != '' && $_GET['p'] != null)
 
         $db_stat = 0;
         $db_privacy = 0;
-        $db_track_all = 0;
+        $track_all = 0;
 
         if ($result = mysqli_query($mysql,$check))
         {
@@ -529,12 +672,12 @@ else if (isset($_GET['p']) && $_GET['p'] != '' && $_GET['p'] != null)
                 echo '<input type="radio" name="track_privacy" checked="checked" value="0" />I want to let anyone start tracking my weapons for me. -OR- ';
                 echo '<input type="radio" name="track_privacy" value="1" />I want to have exclusive control over what is tracked and what isn\'t.<BR \><BR \>';
             }
-            if (isset($db_track_all) && $db_track_all==0){
+            if (!isset($db_track_all)){//if no option has ever been selected
                 echo '<input type="radio" name="track_all" value="1" />I want to have all my strange weapons, current and future, to be tracked automatically. (OPTIONAL) <BR \><BR \>';
             }		
             else if (isset($db_track_all) && $db_track_all==1){
                 echo '<input type="radio" name="track_all" checked="checked" value="1" />I want to have all my strange weapons, current and future, to be tracked automatically. (OPTIONAL) <BR \><BR \>';
-            }		
+            }
     //1 for track_all means yes all weapons will be tracked
             echo '<input id="sub" type="submit" value="Save Settings" />';
             echo '</form>';
@@ -548,29 +691,32 @@ else if (isset($_GET['p']) && $_GET['p'] != '' && $_GET['p'] != null)
             echo '<script>location.reload();</script>'; //force page reload otherwise chrome h8s you
         }
     }
-    else if ($page=="logout"){
-	
-        if (isset($_SESSION['steamID'])){
-                session_start();
-                session_unset();
-                session_destroy();
-                header("location:index.php");
-        }
-}
     render_footer();
 }
+else if (isset($_GET['logout'])){
+        if (isset($_SESSION['steamID'])){
+            session_start();
+            session_unset();
+            session_destroy();
+            echo '<script>window.location = "http://tf2s.info";</script>';   
+     }
+}
+
 
 else
 {
     include ("functions.php");
+    include_once("steamsignin.php");
+    if (!isset($_SESSION['steamID'])) $genurl = SteamSignIn::genUrl();
+    else $genurl = "?userid=$_SESSION[steamID]";
 	render_plain_header();
-	echo '<div class="form">';
+	echo '<div class="form clear">';
 		echo "<div id = 'form'>
 				 <form action='' id='formstyle' method='GET'>
-					 WELCOME!<BR \><BR \>
+					 WELCOME! FIRST TIME?<BR \><BR \>
 					 <input size='50' type='text' style='text-align:center;background:#2D2828;color:#808080; border:1px solid;' name='userid' id='userid' />
 					 <BR \><BR \>
-					 Enter a SteamID or Steam Community ID (eg. <i>76561197985023948</i>) 
+					 Enter a Steam ID, Community ID, or <a href='$genurl' class='contentLink'>Log In!</a>
                 </form>";
         echo '</div>'; 
             include_once('scripts/dbconfig.php');
@@ -599,13 +745,11 @@ else
     echo "</div>";
 
     //render_ads();
-    echo '<div class="front_stats_all">';
-		echo '<h3>TOP STRANGE WEAPON KILLS LOGGED - BREAKDOWN AND CONTRIBUTORS</h3>';
+    echo '<div class="front_stats_all clear">';
+		echo '<h3>TOP STRANGE WEAPON KILLS LOGGED<BR \>BREAKDOWN AND CONTRIBUTORS</h3>';
         //echo '<div class="all_graphs">';
-            echo '<div class="graph_wep_performance"></div><BR \>';
-            echo '<div class="top10_contrib"><img id="loading" src="lib/spin.gif" /><h3>click each slice to see details!</h3><table class="contrib_table"></table></div>';
-           //echo '<div class="graph_pie"></div>';
-           //echo '<div class="weapon_pie"></div>';
+            echo '<div class="contrib_wrapper"><div class="graph_wep_performance"></div><BR \>';
+            echo '<div class="top10_contrib"><img id="loading" src="lib/spin.gif" /><h3 style="margin-top:150px;">Hover over each slice to see details!</h3><table class="contrib_table"></table></div></div>';
 	echo '</div>';
     echo '</div>';
       // echo '</div>';

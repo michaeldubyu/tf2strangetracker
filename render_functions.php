@@ -5,26 +5,30 @@ function render_profile_header($steamid,$avatar_full,$user_status,$display_name)
     include_once ("steamsignin.php");
     echo '<div class="header">';
 		echo "<a href='http://steamcommunity.com/profiles/$steamid/'>";
-		echo "<img src='$avatar_full' title='Go to this user&#x27;s steam profile page.' class='profile_pic' id='$user_status' height='50' \></a>";
+		echo "<img src='$avatar_full' title='Go to this user&#x27;s steam profile page.' height='50' width='50' class='profile_pic' id='$user_status' \></a>";
 		echo '<div class="nav">';
 			echo "<h1><a class='contentLink' href='http://steamcommunity.com/profiles/$steamid/'>{$display_name}</a><span id='$user_status'>'S TF2 BACKPACK</span></h1>";
 		echo '</div>';
-		echo "<a style='margin-left : 20px;' href='index.php'><img style='margin-top:15px; float : right; margin-right:20px; margin-left:10px;' title='Return to the main search form.' height=40 width=40 src='lib/search2.png' \></a>";
-  		echo "<a style='margin-left : 20px;' href='index.php?p=help'><img style='margin-top:10px;float: right; margin-left:10px;' title='Help!' height=50 width=50 src='lib/question.png' \></a>";
-  		echo "<a style='margin-left : 20px;' href='index.php?p=top10'><img style='margin-top:15px;float: right;' title='Check out the top weapons being tracked!' height=40 width=40 src='lib/10.png' \></a>";
-  		if (isset($_SESSION['steamID']) && ($_SESSION['steamID']!=null)) {
-            echo "<a href='index.php?p=usercp'><img style='margin-top:10px;float: right; margin-right:20px;' title='Help!' height=50 width=50 src='lib/eye.png' \></a>";
-            echo "<a href='index.php?userid=$_SESSION[steamID]'><img style='margin-top: 12px;margin-right:20px;float: right;' title='Go to your own profile!' height=40 width=40 src='lib/profile.png' \></a>";
-        }   
+  		        echo "<div class='nav_control' style='margin-top:20px;'>";
+            echo '<a id="nav_home" href="/" ></a>';
+            echo '<a id="nav_search" href="/" ></a>';
+            echo '<a id="nav_top10" href="/?p=top10" ></a>';
+            echo '<a id="nav_faq" href="/?p=help" ></a>';
+  	       
+    	if (isset($_SESSION['steamID']) && ($_SESSION['steamID']!=null)) {
+            echo '<a id="nav_usercp_loggedin" href="/?p=usercp"></a>';
+            echo "<a id='nav_profile_loggedin' href='/?userid=$_SESSION[steamID]'></a>";
+        }
       	else{
            $genurl = SteamSignIn::genUrl();
-            echo "<a href='$genurl'><img style='margin-top:10px;float: right; margin-right:20px;' title='Configure your privacy settings.' height=50 width=50 src='lib/eye.png' \></a>";
-            echo "<a href='$genurl'><img style='margin-top: 15px;margin-right:20px;float: right;' title='Go to your own profile!' height=40 width=40 src='lib/profile.png' \></a>";
+           echo "<a id='nav_usercp' href='$genurl'></a>";
+           echo "<a id='nav_profile' href='$genurl'></a>";
 	}
+    echo '</div>';
     echo '</div>';
 }
 
-function render_backpack($backpack,$schema,$steamid,$online=true)
+function render_backpack($backpack,$schema,$steamid,$online=true,$tutorial)
 {
     $ids = get_tf2_allitem_node($backpack,"id"); //ids of all items
     $defindexes = get_tf2_allitem_node($backpack,"defindex"); //defindexes of all items
@@ -45,7 +49,7 @@ function render_backpack($backpack,$schema,$steamid,$online=true)
     @$item_map_cannot_craft = itemmap_filter_defindex_and_node($backpack,"id",$ids,"flag_cannot_craft");   
     $id_map_defindex = map_tf2_allitem_node($backpack,"id",$ids,"defindex"); 
     //$id_map_defindex[$key=id] => value (defindex)
-        echo '<div class="control_wrapper">';
+        echo '<div class="control_wrapper clear">';
             echo '<div class="control">';    //filter
                 echo '<div class="text">';
                     echo "filter:";
@@ -74,7 +78,7 @@ function render_backpack($backpack,$schema,$steamid,$online=true)
     
     echo '<div class="tf2_backpack_all">';
         if ($online==false) echo '<span id="error">WARNING : Steam Community may be down right now. I\'m currently using an older snapshot of your backpack.</span>';
-        echo '<div class="backpack">';
+        echo '<div class="backpack clear">';
                echo '<div class="backpack_partition">';        
 
     include_once('scripts/dbconfig.php');    
@@ -168,7 +172,8 @@ function render_backpack($backpack,$schema,$steamid,$online=true)
 		}
 		
         echo "<div class='item' inventory_position=\"{$pos}\" item=\"{$desc}\" id='$quality'>";
-        echo "<a href='index.php?userid={$steamid}&item={$key}'>";
+        if ($tutorial!="true") echo "<a href='?userid={$steamid}&item={$key}'>";
+        else echo "<a href='?tutorial=true&item={$key}'>";
         echo "<img width='75' height'75' src='$item_map_image_url[$value]' \>";
         echo "</a>";
 		if ($pos == 0) echo '<div id="new_item">NEW ITEM!</div>';
@@ -198,7 +203,7 @@ function render_backpack($backpack,$schema,$steamid,$online=true)
         if ($itemcount == 50)
         {
             echo "</div>";
-            echo "<HR class='floatclear'>";
+            echo "<hr class='floatclear' \>";
             echo "<div class='backpack_partition'>";        
             $itemcount=0;
         }
@@ -206,16 +211,18 @@ function render_backpack($backpack,$schema,$steamid,$online=true)
 	$mysqli2->close();
     echo '</div>';
     echo '</div>';
+    echo '</div>';
 }
 
 function render_item_desc($steamid,$itemid, $single_quality,$item_image_url,$single_defindex, $single_item_strange_kills, $single_item_name, $single_item_custom_name,$single_item_custom_desc,$single_item_previous_id,$single_item_strange_kills)        
 {
-        echo '<div class="item_desc_all">';
-        echo "<a class='back_button' style='text-decoration:underline;' href='index.php?userid={$steamid}'>&lt;&lt;BACK TO BACKPACK</a><br \>";
+        echo '<div class="item_wrapper clear">';
+        echo '<div class="item_desc_all clear">';
+        echo "<a class='back_button' href='?userid={$steamid}'>&lt;&lt;BACK TO BACKPACK</a><br \>";
             echo '<div class="item_page_img">';
                 echo "<img style='margin-left:10px;' height='175' width='175' class='item' id='{$single_quality}' src='{$item_image_url[$single_defindex]}' \>";
             echo '</div>';
-           echo '<div class="item_page_desc">';
+            echo '<div class="item_page_desc">';
                 if ($single_quality=='strange')
                 {
                     $rank = tf2_get_strange_kill_rank($single_item_strange_kills);
@@ -229,6 +236,7 @@ function render_item_desc($steamid,$itemid, $single_quality,$item_image_url,$sin
                 if ($single_item_previous_id!=null) echo "<span style='font-size:15px;' id='{$single_quality}'>Previous ID : $single_item_previous_id</span><BR \>";
                 if ($single_item_strange_kills!=null) echo "<span id='item_desc_strange_kills'>Kills : $single_item_strange_kills</span><BR \>";
             echo '</div>';
+            echo '</div>';
         echo '</div>';
         echo '<HR class="item_page" \>';   
 }
@@ -237,22 +245,25 @@ function render_plain_header()
 {
 	include_once ("steamsignin.php");
   	echo "<div class='no_login_header'>";
-		echo '<div class="no_login_nav" onclick="location.href=\'/index.php\';">';
+		echo '<div class="no_login_nav" onclick="location.href=\'/\';">';
 			echo "<span>TF2 STRANGE TRACKER</span>";
 		echo '</div>';
-        echo "<a style='float:right; margin-right:30px;' href='index.php'><img style='margin-top:10px;' title='Return to the main search form.' height=40 width=40 src='lib/search2.png' \></a>";
-        echo '<a style="float:right; margin-right:20px;" href="index.php?p=top10"><img style="margin-top:10px;" title="Check out the top weapons being tracked!" height="40" width="40" src="lib/10.png" \=""></a>';
-  		echo "<a style='float:right;margin-right:10px;margin-top:4px;' href='index.php?p=help'><img title='Help!' height=50 width=50 src='lib/question.png' \></a>";
-  		if (isset($_SESSION['steamID']) && ($_SESSION['steamID']!=null)) {
-            echo "<a href='index.php?p=usercp'><img style='margin-top:5px;float: right; margin-right:10px;' title='Configure your privacy options.' height=50 width=50 src='lib/eye.png' \></a>";
-            echo "<a href='index.php?userid=$_SESSION[steamID]'><img style='margin-top: 5px;margin-right:20px;float: right;' title='Go to your own profile!' height=40 width=40 src='lib/profile.png' \></a>";
+        echo "<div class='nav_control'>";
+            echo '<a id="nav_home" href="/" ></a>';
+            echo '<a id="nav_search" href="/" ></a>';
+            echo '<a id="nav_top10" href="/?p=top10" ></a>';
+            echo '<a id="nav_faq" href="/?p=help" ></a>';
+  	       
+    	if (isset($_SESSION['steamID']) && ($_SESSION['steamID']!=null)) {
+            echo '<a id="nav_usercp_loggedin" href="/?p=usercp"></a>';
+            echo "<a id='nav_profile_loggedin' href='/?userid=$_SESSION[steamID]'></a>";
         }
       	else{
            $genurl = SteamSignIn::genUrl();
-            echo "<a href='$genurl'><img style='margin-top:5px;float: right; margin-right:10px;' title='Configure your privacy options.' height=50 width=50 src='lib/eye.png' \></a>";
-            echo "<a href='$genurl'><img style='margin-top: 5px;margin-right:20px;float: right;' title='Go to your own profile!' height=40 width=40 src='lib/profile.png' \></a>";
+           echo "<a id='nav_usercp' href='$genurl'></a>";
+           echo "<a id='nav_profile' href='$genurl'></a>";
 	}
-  
+        echo "</div>";
     echo '</div>';
 }
 
@@ -278,7 +289,7 @@ function render_footer()
             $_SESSION['display_name'] = (string) $sd_name;
             $_SESSION['steamID'] = (string) $s_profile->steamID64;
             $_SESSION['last_activity'] = time();
-           echo "<script>window.location = 'index.php?id=$_SESSION[steamID]';</script>";
+           echo "<script>window.location = '?id=$_SESSION[steamID]';</script>";
         }
         else echo "<div id='custom_desc' style = 'font-size:15px; height:25px; margin : 5px 5px 5px 5px;'>That response didn't seem quite right. Please verify your login details!</div>";
     }
