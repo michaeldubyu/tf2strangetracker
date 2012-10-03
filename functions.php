@@ -18,9 +18,9 @@ function download_page($path)
 
 function get_steam_profile_xml($id)
 {
-	$pageNumeric = "http://steamcommunity.com/profiles/$id/?xml=1&l=en";
-	$pageAlpha = "http://steamcommunity.com/id/$id/?xml=1&l=en";
-	
+    $pageNumeric = "http://steamcommunity.com/profiles/$id/?xml=1&l=en";
+    $pageAlpha = "http://steamcommunity.com/id/$id/?xml=1&l=en";
+
     $id = trim($id);
     
     if (is_numeric($id)) $sXML = download_page($pageNumeric);
@@ -31,9 +31,8 @@ function get_steam_profile_xml($id)
     $oXML = new SimpleXMLElement($sXML);
   
     if ($oXML!=null)return $oXML;
-    else return null;    
+    else return null;  
 }
-
 //returns the friends list of a user
 function get_steam_friends_xml($id)
 {
@@ -122,7 +121,7 @@ function map_tf2_allitem_node($xml,$identifiername,$keyidentifiers,$value)
 			if ($keys==(string)$target->$identifiername) 
 			{
 				$nodes[$keys] = (string)$target->$value;
-				break;
+				break(1);
 			}
 		}
 	}
@@ -217,7 +216,7 @@ function itemmap_filter_defindex_and_node($xml,$identifiername,$identifierarray,
 			if ($element->$identifiername == (string)$indexes)
 			{
 				$itemmap[$indexes] = (string)$element->$target;	
-				break;
+				break(1);
 			}
 		}
 	}
@@ -253,6 +252,7 @@ function attrmap_filter_defindex_and_node($xml,$identifierarray,$defindex,$targe
                     if ($attr->defindex == $defindex)
                     {
                         $itemmap[$id] = (string)$attr->$target;
+                        break(3);
                     }
                 }
             }
@@ -287,21 +287,19 @@ function get_single_attr($xml,$id,$defindex,$target)
 }
 
 function save_xml($xml,$filepath) //filepath is relative to root, includes file name
-{//return true if changed, false if unchanged
+{
 	$filepath = "{$_SERVER['DOCUMENT_ROOT']}{$filepath}";
-	if (file_exists($filepath)) //check existing
+	if (file_exists($filepath)) //if exists and the current time-file creation time is more than 1 hr
 	{
 		$current = md5(simplexml_load_file($filepath));
 		if (md5($xml) != $current && $xml!=null) //if different and not null
 		{
 			$xml->asXML($filepath);
 		}
-		return $xml;
 	}
 	else //create file
 	{
         if ($xml!=null) $xml->asXML($filepath);
-		return $xml;
 	}
 }
 

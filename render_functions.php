@@ -173,7 +173,7 @@ function render_backpack($backpack,$schema,$steamid,$online=true,$tutorial)
 		
         echo "<div class='item' inventory_position=\"{$pos}\" item=\"{$desc}\" id='$quality'>";
         if ($tutorial!="true") echo "<a href='?userid={$steamid}&item={$key}'>";
-        else echo "<a href='?tutorial=true&item={$key}'>";
+        else echo "<a href='?p=tutorial_item&item={$key}'>";
         echo "<img width='75' height'75' src='$item_map_image_url[$value]' \>";
         echo "</a>";
 		if ($pos == 0) echo '<div id="new_item">NEW ITEM!</div>';
@@ -214,11 +214,13 @@ function render_backpack($backpack,$schema,$steamid,$online=true,$tutorial)
     echo '</div>';
 }
 
-function render_item_desc($steamid,$itemid, $single_quality,$item_image_url,$single_defindex, $single_item_strange_kills, $single_item_name, $single_item_custom_name,$single_item_custom_desc,$single_item_previous_id,$single_item_strange_kills)        
+function render_item_desc($steamid,$itemid, $single_quality,$item_image_url,$single_defindex, $single_item_strange_kills, $single_item_name, $single_item_custom_name,$single_item_custom_desc,$single_item_previous_id,$single_item_strange_kills,$tutorial)        
 {
         echo '<div class="item_wrapper clear">';
         echo '<div class="item_desc_all clear">';
-        echo "<a class='back_button' href='?userid={$steamid}'>&lt;&lt;BACK TO BACKPACK</a><br \>";
+        if ($tutorial!=true)echo "<a class='back_button' style='text-decoration:underline;' href='?userid={$steamid}'>&lt;&lt;BACK TO BACKPACK</a><br \>";
+        else echo "<a class='back_button' style='text-decoration:underline;' href='?p=tutorial'>&lt;&lt;BACK TO BACKPACK</a><br \>";
+        
             echo '<div class="item_page_img">';
                 echo "<img style='margin-left:10px;' height='175' width='175' class='item' id='{$single_quality}' src='{$item_image_url[$single_defindex]}' \>";
             echo '</div>';
