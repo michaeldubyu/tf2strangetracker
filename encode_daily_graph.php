@@ -3,7 +3,6 @@
     $mysqli2 = mysqli_connect($host,$username,$password,$db);
     if(mysqli_connect_errno()) echo mysqli_connect_error();
     
-    $last_time = time()-86400;
     $current_time = time();
     $time = date('Ym');
     $table = "events_$time"; //select from current month's db
@@ -11,7 +10,7 @@
     if (isset($_GET['itemid']) && $_GET['itemid']!=null) 
     {
         $itemid = $_GET['itemid'];
-        $query2 = "SELECT * FROM $table WHERE `itemid`=$itemid AND `time` >= $last_time AND `time` <= $current_time";
+        $query2 = "SELECT * FROM $table WHERE `itemid`=$itemid AND `time` >= DATE_SUB(NOW(), INTERVAL 1 HOUR) LIMIT 24";
         $query2 = mysqli_real_escape_string($mysqli2,$query2);                
 
         $data_daily = array();

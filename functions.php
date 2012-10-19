@@ -162,14 +162,14 @@ function tf2_get_strange_kill_rank($kill_count)
 	elseif ($kill_count>='350' && $kill_count<'500') return "gore-spattered"; 
 	elseif ($kill_count>='500' && $kill_count<'750') return "wicked nasty";
 	elseif ($kill_count>='750' && $kill_count<'999') return "positively inhumane"; 
-	elseif ($kill_count=='999') return "totally ordinary";
-    elseif ($kill_count>='1000') return "face-melting";
+	elseif ($kill_count==999) return "totally ordinary";
+	elseif ($kill_count>='1000' && $kill_count<'1500') return "";     
 	elseif ($kill_count>='1500' && $kill_count<'2500') return "rage-inducing"; 
 	elseif ($kill_count>='2500' && $kill_count<'5000') return "server-clearing";
 	elseif ($kill_count>='5000' && $kill_count<'7500') return "epic"; 
 	elseif ($kill_count>='7500' && $kill_count<'7616') return "legendary";
     elseif ($kill_count>='7616' && $kill_count<'8500') return "austrailian";
-	elseif ($kill_count>='8500') return "hale's own"; 
+	elseif ($kill_count>= '8500') return "hale's own"; 
 	else return "";    
 }
 
@@ -252,7 +252,7 @@ function attrmap_filter_defindex_and_node($xml,$identifierarray,$defindex,$targe
                     if ($attr->defindex == $defindex)
                     {
                         $itemmap[$id] = (string)$attr->$target;
-                        break(3);
+                        break(2);
                     }
                 }
             }
@@ -289,7 +289,7 @@ function get_single_attr($xml,$id,$defindex,$target)
 function save_xml($xml,$filepath) //filepath is relative to root, includes file name
 {
 	$filepath = "{$_SERVER['DOCUMENT_ROOT']}{$filepath}";
-	if (file_exists($filepath)) //if exists and the current time-file creation time is more than 1 hr
+	if (file_exists($filepath))
 	{
 		$current = md5(simplexml_load_file($filepath));
 		if (md5($xml) != $current && $xml!=null) //if different and not null

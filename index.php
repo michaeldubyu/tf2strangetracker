@@ -3,9 +3,32 @@ session_start();
 header("Cache-Control: private, max-age=10800, pre-check=10800");
 header("Pragma: private");
 header("Expires: " . date(DATE_RFC822,strtotime(" 2 day")));
+
+if (isset($_GET['logout'])){
+        if (isset($_SESSION['steamID'])){
+            session_start();
+            session_unset();
+            session_destroy();
+            echo "<script>window.location.replace('http://tf2s.info');</script>";
+        }
+}
 ?>
+<!DOCTYPE html>
 <html>
 	<head>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-35707806-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
         <META http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		<link rel="stylesheet" type="text/css" href="tf2_tracker.css" />
         <link rel="stylesheet" type="text/css" href="lib/gritter/css/jquery.gritter.css" />
@@ -18,6 +41,7 @@ header("Expires: " . date(DATE_RFC822,strtotime(" 2 day")));
         <script type="text/javascript" src="lib/tutorial.js"></script>
         <script type="text/javascript" src="lib/tutorial_item.js"></script>
         <script type="text/javascript" src="lib/gritter/js/jquery.gritter.js"></script>
+        <!--[if IE]><script type="text/javascript" src="lib/flot/excanvas.js"></script><![endif]-->
 	</head>
 	
 	<title>TF2 Strange Tracker</title>
@@ -25,7 +49,7 @@ header("Expires: " . date(DATE_RFC822,strtotime(" 2 day")));
 	
 <?php 
 include("render_functions.php");
-if (isset($_SESSION['last_activity']) && time() - 1800 > $_SESSION['last_activity'])
+if (isset($_SESSION['last_activity']) && time() - 3600 > $_SESSION['last_activity'])
 {
     //destroy dession if it was older than half an hour
     session_unset();
@@ -163,9 +187,16 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
                       							
                         $query = "SELECT * FROM `items` WHERE `itemid`=$itemid";
                         $result = $mysqli->query($query);
+
                         $check = "SELECT * from user WHERE `steamid`='$_GET[userid]'";
                         $re = $mysqli->query($check);
                         $rows = $re->fetch_assoc();
+
+    					$time = date('Ym');
+	    				$table = "events_$time"; //select from current month's db
+                        $data = "SELECT * FROM `$table` WHERE `itemid`=$itemid";
+                        $data_re = $mysqli->query($data);                                   
+
                         $track_privacy = 0; //default values for privacy
                         $stat_privacy = 0; //public tracking and stat viewing options
                         $wep_steamid = 0; //manual management of tracking
@@ -174,7 +205,15 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
                         if (isset($rows['stat_privacy']) && $rows['stat_privacy']!=null) $stat_privacy = $rows['stat_privacy'];
                         if (isset($rows['steamid']) && $rows['steamid']!=null) $wep_steamid = $rows['steamid'];    
                         
-                        if ($result->num_rows=='0' && $track_privacy==0) //if no data exists, should begin tracking
+                        if ($_GET['userid']==$_SESSION['steamID']) $loggedIn = true;
+                        else $loggedIn = false;
+
+                        if (isset($_GET['stop']) && $_GET['stop']=='true' && $loggedIn){
+                            $del = "DELETE FROM `items` WHERE `itemid`='$itemid'";
+                            $mysqli->query($del);
+                        }
+                        
+                        if ($track_privacy==0 && $result->num_rows==0) 
                         {
 							if (isset($_GET['track']) && $_GET['track']=='true')
 							{//track, iff privacy is set to public
@@ -188,12 +227,15 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
                                     $update = "UPDATE `item_table` SET `tracked`='1' WHERE item_id='$itemid' AND steam_id='$steamid'";
                                     $k = $mysqli->query($update) or die ($mysqli->error);
                                     
-                                    echo "<span id='no_data'>Item added. I'll be checking this item every hour and you'll soon able to see more in depth data.</span>";
+                                    echo "<span id='no_data'>Item added. I'll be checking this item every hour.</span>";
                                 }
                             }else echo "<span id='no_data'>No data available for this item. <a href='?userid={$steamid}&item={$itemid}&track=true'>Start tracking?</a></span>";
 
 						}
-                        else if (($stat_privacy==0 || (isset($_SESSION['steamID']) && $_GET['userid']==$_SESSION['steamID']))  && $result->num_rows>0)
+                        else if ($data_re->num_rows>0 && $result->num_rows==0){
+                            echo "<span id='no_data'>Data exists, but it looks like the user has removed it from being tracked.</span>";
+                        }
+                        else if (($stat_privacy==0 || $loggedIn) && $result->num_rows>0)
 						{
 
 							//show graphs 	                                            							
@@ -202,10 +244,6 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
 								echo "<div class='graph_daily'><img id='loading' src='lib/spin.gif' />";
 								echo "</div>";						
 							echo "</div>";
-							/*echo '<div class="graph_sidebar"><h3>FOR YOUR INFORMATION</h3><BR \>
-                                    - all times displayed are UTC<BR \><BR \>
-                                    - if there is a point missing, most likely I could not contact the steam api<BR \><BR \>';
-							echo '</div>';*/
 							echo "<div class='graph_weekly_wrapper'>";
 								echo "<span id='graph_weekly'><h1 style='text-align:center; color:#d986b5;'>in the last while</h1></span>";
 								echo "<div class='graph_weekly'><img id='loading' src='lib/spin.gif' />";
@@ -219,18 +257,21 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
                     }   
                         echo '</div>';
                     echo '</div>';
-                    echo '<div class="sidebar">';
+                    if ($single_quality=='strange'){
+                     echo '<div class="sidebar">';
                        echo "<div id='admin_title'>OPTIONS</div>"; 
                         echo "<ul id='admin_list'>";
-                        if ($result->num_rows>0){
-                            echo "<li>STOP TRACKING ITEM</li>";
-                            echo "<li>EXPORT AS CSV</li>";     
+                        if ($result->num_rows>0){ //if being tracked
+                            echo "<li><a href='/?userid={$steamid}&item={$itemid}&stop=true' class='contentLink'>STOP TRACKING ITEM</a></li>";
                         }
+                        else echo "<li><a href='/?userid={$steamid}&item={$itemid}&track=true' class='contentLink'>START TRACKING ITEM</a></li>";
                        echo "</ul>";
+                       if (!$loggedIn && isset($_GET['stop'])) echo "<span id='admin_error'>You're not logged in as the owner!</span>";
                    echo '</div>';
                 echo '</div>';
                 echo '</div>';
-                //render_ads();
+                }
+                render_ads();
                 render_footer();
 
 
@@ -238,7 +279,7 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
             else if ($backpackxml->result!='15')
             {//normal render
                 render_backpack($backpack,$schema,$steamid,true,false);
-                //render_ads();
+                render_ads();
                 render_footer();
                 save_xml($backpack,"/backpacks/{$steamid}_backpack.xml");	        
                 save_xml($profile,"/profiles/{$steamid}_profile.xml"); 
@@ -311,6 +352,10 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
                             $check = "SELECT * from user WHERE `steamid`='$_GET[userid]'";
                             $re = $mysqli->query($check);
                             $rows = $re->fetch_assoc();
+            
+                            $entries = "SELECT * FROM `$table` WHERE `itemid`=$itemid";
+                            $entry_re = $mysqli->query($entries);
+
                             $track_privacy = 0; //default values for privacy
                             $stat_privacy = 0; //public tracking and stat viewing options
                             $wep_steamid = 0; //manual management of tracking
@@ -319,7 +364,7 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
                             if (isset($rows['stat_privacy']) && $rows['stat_privacy']!=null) $stat = $rows['stat_privacy'];
                             if (isset($rows['steamid']) && $rows['steamid']!=null) $wep_steamid = $rows['steamid'];    
                                 
-                            if ($result->num_rows=='0') //if no data exists, should begin tracking
+                            if ($result->num_rows=='0' || ($entry_re->num_rows>0 && isset($_GET['track']))) //if no data exists, should begin tracking
                             {
                                 echo "<span id='no_data'>No data available for this item. <a href='?userid={$steamid}&item={$itemid}&track=true'>Start tracking?</a></span>";
                                 if (isset($_GET['track']) && $_GET['track']=='true')
@@ -334,10 +379,9 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
                                         $update = "UPDATE `item_table` SET `tracked`='1' WHERE item_id='$itemid' AND steam_id='$steamid'";
                                         $k = $mysqli->query($update) or die ($mysqli->error);
                                         
-                                        echo "<span id='no_data'>Item added. I'll be checking this item every hour and you'll soon able to see more in depth data.</span>";
-        				}
+                                    echo "<span id='no_data'>Item added. I'll be checking this item every hour and you'll soon able to see more in depth data.</span>";
+                    				}
                                 }else echo "<span id='no_data'>Sorry! This user has requested that their data remain private.</span>";
-
                             }
                             if (($stat==0 || (isset($_SESSION['steamID']) && $_GET['userid']==$_SESSION['steamID']))  && $result->num_rows>0)
                             {
@@ -347,10 +391,6 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
                                     echo "<div class='graph_daily'><img id='loading' src='lib/spin.gif' />";
                                     echo "</div>";						
                                 echo "</div>";
-                                echo '<div class="graph_sidebar"><h3>FOR YOUR INFORMATION</h3><BR \>
-                                        - all times displayed are UTC<BR \><BR \>
-                                        - if there is a point missing, most likely I could not contact the steam api<BR \><BR \>';
-                                echo '</div>';
                                 echo "<div class='graph_weekly_wrapper'>";
                                     echo "<span id='graph_weekly'><h1 style='text-align:center; color:#d986b5;'>in the last while</h1></span>";
                                     echo "<div class='graph_weekly'><img id='loading' src='lib/spin.gif' />";
@@ -476,7 +516,7 @@ else if (isset($_GET['p']) && $_GET['p'] != '' && $_GET['p'] != null)
                 echo "</tbody></table>";
             echo "</div>";
             echo "</div>";            
-            //render_ads();
+            render_ads();
         echo "</div>";
         render_footer();
     }
@@ -558,16 +598,6 @@ else if (isset($_GET['p']) && $_GET['p'] != '' && $_GET['p'] != null)
         }
     }
 }
-else if (isset($_GET['logout'])){
-        if (isset($_SESSION['steamID'])){
-            session_start();
-            session_unset();
-            session_destroy();
-            echo '<script>window.location = "http://tf2s.info";</script>';   
-     }
-}
-
-
 else
 {
     include ("functions.php");
@@ -613,11 +643,12 @@ else
     echo '<div class="front_stats_all clear">';
 		echo '<h3>TOP STRANGE WEAPON KILLS LOGGED<BR \>BREAKDOWN AND CONTRIBUTORS</h3>';
         //echo '<div class="all_graphs">';
-            echo '<div class="contrib_wrapper"><div class="graph_wep_performance"></div><BR \>';
+            echo '<div class="contrib_wrapper clear"><div class="graph_wep_performance"></div><BR \>';
             echo '<div class="top10_contrib"><img id="loading" src="lib/spin.gif" /><h3 style="margin-top:150px;">Hover over each slice to see details!</h3><table class="contrib_table"></table></div></div>';
 	echo '</div>';
     echo '</div>';
       // echo '</div>';
+    render_ads();
     render_footer();
 }
 

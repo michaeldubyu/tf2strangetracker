@@ -84,6 +84,7 @@ div.item_desc_all
 {
     text-align : center;
     min-width: 950px;
+    max-width: 1200px;
     margin:0px auto;
     background: #2d2828;
     border-radius:15px;    
@@ -107,9 +108,8 @@ div.help_content
 
 div.help_content h2
 {
-	font-size: 35px;
+	font-size: 30px;
 	color: #D986B5;
-	width: 100px;
 	background: #2D2828;
 	text-align: center;
 	border-radius: 8px;
@@ -207,7 +207,7 @@ div.graph_all
 div.graph_daily_wrapper
 {
     margin: 0px auto;
-	width: 700px;
+	width: 775px;
 	height: 350px;
 	margin-bottom : 20px;
 }
@@ -215,7 +215,7 @@ div.graph_daily_wrapper
 
 div.graph_weekly
 {
-	width: 700px;
+	width: 750px;
 	height: 300px;
 }
 
@@ -249,7 +249,7 @@ div.weapon_pie
 
 div.graph_wep_performance
 {
-    width : 550px;
+    width : 560px;
     height : 500px;
     float:left;
     margin-left:2%;
@@ -299,7 +299,7 @@ div.contrib_wrapper{
 
 div.graph_weekly_wrapper
 {
-	width: 700px;
+	width: 750px;
 	height: 375px;
 	margin-bottom : 20px;
     margin-left:20px;
@@ -308,7 +308,7 @@ div.graph_weekly_wrapper
 
 div.graph_daily
 {
-	width: 700px;
+	width: 775px;
 	height: 300px;
 	float : left;
 }
@@ -342,7 +342,7 @@ div.form
 
 div.front_stats
 {
-    color: D9868C;
+    color: #D9868C;
     background: #2D2828;
     border-radius: 8px;
     padding-top: 20px;
@@ -353,6 +353,7 @@ div.front_stats
     margin-bottom:20px;
     margin-left:auto;
     margin-right:auto;
+    margin-top:20px;
 }
 
 div.tf2_backpack_all
@@ -415,7 +416,14 @@ div.sidebar
 
 #admin_list{
     color : #FFFFFF;
-    padding-bottom:20px;
+    padding-bottom:10px;
+}
+
+#admin_error{
+    color : red;
+    display:block;
+    text-align:center;
+    padding-bottom:10px;
 }
 
 div #admin_title{
@@ -506,9 +514,36 @@ div.no_login_header
 }
 
 div.nav_control{
-    width:230px;
+    width:330px;
     float:right;
+}
 
+#nav_refresh:link{
+    background-image:url("lib/open-source-icons/PNG/white/reload.png") ;
+    background-repeat : no-repeat;
+    float:right;
+    width:32px;
+    height:32px;
+    margin-right:10px;
+}
+
+#nav_refresh:hover{
+    background-image:url("lib/open-source-icons/PNG/grey/reload.png") ;
+    background-repeat : no-repeat;
+    float:right;
+    width:32px;
+    height:32px;
+    margin-right:10px;
+}
+
+#nav_logout:link{
+    background-image:url("lib/open-source-icons/custom/logout.png") ;
+    background-repeat : no-repeat;
+    float:right;
+    width:32px;
+    height:32px;
+    margin-right:5px;
+    margin-top:4px;
 }
 
 #nav_home:link{
@@ -543,7 +578,6 @@ div.nav_control{
     float:right;
     width:32px;
     height:32px;
-    margin-right:5px;
 }
 
 #nav_top10:link{
@@ -552,7 +586,7 @@ div.nav_control{
     float:right;
     width:32px;
     height:32px;
-    margin-right:5px;
+    margin-right:10px;
 }
 
 #nav_top10:hover{
@@ -561,8 +595,11 @@ div.nav_control{
     float:right;
     width:32px;
     height:32px;
-    margin-right:5px;
+    margin-right:10px;
+    
 }
+
+
 
 
 #nav_usercp:link{
@@ -638,7 +675,7 @@ div.nav_control{
     float:right;
     width:32px;
     height:32px;
-    margin-right:5px;
+    margin-right:15px;
 }
 
 #nav_faq:hover{
@@ -647,7 +684,7 @@ div.nav_control{
     float:right;
     width:32px;
     height:32px;
-    margin-right:5px;
+    margin-right:15px;
 }
 
 div.no_login_nav
@@ -667,7 +704,6 @@ div.footer
     background :#202021;
     color : #787876;
     overflow: display;
-    margin-top:20px;
 }
 
 #form
@@ -967,6 +1003,7 @@ a:hover
     margin-top: 40px;
     margin-bottom: 20px;
     width: 100%;
+    display:block;  
 }
 
 #no_data
@@ -974,8 +1011,8 @@ a:hover
     color : #ff4d4d;
     text-align: center;
 	float : left;
-	margin-left : 20%;
     margin-bottom:25px;
+    padding-left:50px;
 }
 
 #not_public{

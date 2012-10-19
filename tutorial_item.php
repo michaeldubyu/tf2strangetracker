@@ -58,19 +58,18 @@
                  echo '</div>';
                  echo '<div class="graph_all clear">';
 
-                 echo "<span id='no_data'>No data available for this item. <a class='contentLink' style='text-decoration:underline;' href='#'>Start tracking?</a></span>";
+                 echo "<span id='no_data'>No data available for this item.</span>";
                  //show no data link first, then use jquery to display the item added message
-                 echo "<span id='no_data' style='display:none;'>Item added. I'll be checking this item every hour and you'll soon able to see more in depth data.</span>";
             
                  //show graphs
                  echo "<div style='display:none;' class='graph_daily_wrapper'>";
                      echo "<span id='graph_24hrs'><h1 style='text-align:center; color:#86b5d9;'>in the last 24 hours</h1></span>";
-                     echo "<div class='graph_daily'><img id='loading' src='lib/spin.gif' />";
+                     echo "<div class='graph_ex_daily' style='width:750px;height:300px;margin:0px auto;'>";
                      echo "</div>";
                  echo "</div>";
                  echo "<div style='display:none;' class='graph_weekly_wrapper'>";
                     echo "<span id='graph_weekly'><h1 style='text-align:center; color:#d986b5;'>in the last while</h1></span>";
-                    echo "<div class='graph_weekly'><img id='loading' src='lib/spin.gif' />";
+                    echo "<div class='graph_ex_weekly' style='width:750px;height:300px;margin:0px auto;'>";
                     echo "</div>";
                  echo "</div>";
 
@@ -80,13 +79,15 @@
                 echo '<div class="sidebar">';
                     echo "<div id='admin_title'>OPTIONS</div>"; 
                         echo "<ul id='admin_list'>";
-                            echo "<li style='display:none';>STOP TRACKING ITEM</li>"; 
-                            echo "<li class='contentLink' style='text-decoration:underline;'>EXPORT AS CSV</li>";     
+                            echo "<li><a id='track_link' class='contentLink' style='text-decoration:underline;' href='#'>Start tracking item</a></li>";
+                            echo "<li id='stop_track_link' style='display:none;text-decoration:underline;'><a href='#'>STOP TRACKING ITEM</a></li>"; 
+                          //echo "<li class='contentLink' style='text-decoration:underline;'><a href='#'>EXPORT AS CSV</a></li>";     
                       echo "</ul>";
              }
             echo '</div>';
         echo '</div>';
     }
+    echo '</div>';
     render_footer();  
 
 ?>

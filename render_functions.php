@@ -14,8 +14,9 @@ function render_profile_header($steamid,$avatar_full,$user_status,$display_name)
             echo '<a id="nav_search" href="/" ></a>';
             echo '<a id="nav_top10" href="/?p=top10" ></a>';
             echo '<a id="nav_faq" href="/?p=help" ></a>';
-  	       
+            echo '<a id="nav_refresh" href="javascript:void(0)" onClick="window.location.reload();" ></a>';  	       
     	if (isset($_SESSION['steamID']) && ($_SESSION['steamID']!=null)) {
+            echo "<a id='nav_logout' href='/?logout'></a>";
             echo '<a id="nav_usercp_loggedin" href="/?p=usercp"></a>';
             echo "<a id='nav_profile_loggedin' href='/?userid=$_SESSION[steamID]'></a>";
         }
@@ -255,8 +256,10 @@ function render_plain_header()
             echo '<a id="nav_search" href="/" ></a>';
             echo '<a id="nav_top10" href="/?p=top10" ></a>';
             echo '<a id="nav_faq" href="/?p=help" ></a>';
-  	       
+            echo '<a id="nav_refresh" href="javascript:void(0)" onClick="window.location.reload();" ></a>';  	       
+
     	if (isset($_SESSION['steamID']) && ($_SESSION['steamID']!=null)) {
+            echo "<a id='nav_logout' href='/?logout'></a>";
             echo '<a id="nav_usercp_loggedin" href="/?p=usercp"></a>';
             echo "<a id='nav_profile_loggedin' href='/?userid=$_SESSION[steamID]'></a>";
         }
@@ -314,17 +317,17 @@ function render_info_panel($customURL,$steamid,$user_status,$mostplayedgame,$mos
 
 function render_ads()
 {
-    	echo '<div class="ads"><script type="text/javascript"><!--
-            google_ad_client = "ca-pub-9354358608748913";
-            /* Home Blog */
-            google_ad_slot = "3921198496";
-            google_ad_width = 160;
-            google_ad_height = 600;
-            //-->
-            </script>
-            <script type="text/javascript"
-            src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
-            </script></div>';
+echo '<div style="width:728px;height:90px;margin:0px auto;padding:15px;"><script type="text/javascript"><!--
+google_ad_client = "ca-pub-9354358608748913";
+/* Lowerboard */
+google_ad_slot = "8678489508";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script></div>';
 }
 
 ?>
