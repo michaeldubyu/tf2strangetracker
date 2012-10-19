@@ -1,6 +1,6 @@
 <?php 
 session_start(); 
-header("Cache-Control: private, max-age=10800, pre-check=10800");
+header("Cache-Control: no-store,must-revalidate");
 header("Pragma: private");
 header("Expires: " . date(DATE_RFC822,strtotime(" 2 day")));
 
@@ -129,7 +129,7 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
                 $defindex[] = $item_defindex[$itemid];
                 $item_image_url = itemmap_filter_defindex_and_node($schema,"defindex",$defindex,"image_url_large");
                 
-                $item_name = itemmap_filter_defindex_and_node($schema,"defindex",$defindex,"name");
+                $item_name = itemmap_filter_defindex_and_node($schema,"defindex",$defindex,"item_name");
                 $item_quality = itemmap_filter_defindex_and_node($backpack,"id",$items,"quality");
                 $item_custom_name = itemmap_filter_defindex_and_node($backpack,"id",$items,"custom_name");
                 $item_custom_desc = itemmap_filter_defindex_and_node($backpack,"id",$items,"custom_desc");
@@ -586,7 +586,8 @@ else if (isset($_GET['p']) && $_GET['p'] != '' && $_GET['p'] != null)
             echo '<input id="sub" type="submit" value="Save Settings" />';
             echo '</form>';
         echo '</div>';
-        render_footer();
+       render_ads(); 
+       render_footer();
 
         if ((isset($_POST['stat_privacy']) || isset($_POST['track_privacy']) || isset($_POST['track_all'])))
         {

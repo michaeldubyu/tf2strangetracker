@@ -1,7 +1,7 @@
 <?php
 
 
-$xml = simplexml_load_file("http://api.steampowered.com/IEconItems_440/GetSchema/v0001/?key=E952EF69C4972394EF63800AC3F40C07&steamid=76561197985023948&format=xml");
+$xml = simplexml_load_file("http://api.steampowered.com/IEconItems_440/GetSchema/v0001/?key=E952EF69C4972394EF63800AC3F40C07&steamid=76561197985023948&format=xml&language=en");
 
 if ($xml!=null)
 {

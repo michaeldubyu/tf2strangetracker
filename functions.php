@@ -74,7 +74,7 @@ function get_tf2_backpack_xml($id)
     global $key;
     
     $tempid = trim($id);
-	$backpackURL = "http://api.steampowered.com/IEconItems_440/GetPlayerItems/v0001/?key=$key&steamid=$tempid&format=xml";
+	$backpackURL = "http://api.steampowered.com/IEconItems_440/GetPlayerItems/v0001/?key=$key&steamid=$tempid&format=xml&language=en";
 	$sXML = download_page($backpackURL);
     
     if ($sXML == null) return null;
@@ -88,7 +88,7 @@ function get_tf2_schema_xml($id)
     global $key;
     
     $tempid = trim($id);
-	$schemaURL = "http://api.steampowered.com/IEconItems_440/GetSchema/v0001/?key=$key&steamid=$tempid&format=xml";
+	$schemaURL = "http://api.steampowered.com/IEconItems_440/GetSchema/v0001/?key=$key&format=xml&language=en";
 		
 	$sXML = download_page($schemaURL);
     $oXML = new SimpleXMLElement($sXML);

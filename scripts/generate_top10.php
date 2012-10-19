@@ -1,10 +1,10 @@
-<?php
+ev<?php
 	$mysqli_t = mysqli_connect('localhost','geogaddi_tf2db','h1myn4meISroot','geogaddi_tf2db');
 	if(mysqli_connect_errno()) echo mysqli_connect_error();
 	$time = date('Ym');
 	$table = "events_$time"; //select from current month's db
 
-    	$query_t = "SELECT * FROM (SELECT itemid,value,steamid FROM $table ORDER BY value DESC) AS tbl1 GROUP BY itemid ORDER BY value DESC LIMIT 0,100";
+    	$query_t = "SELECT * FROM (SELECT itemid,value,steamid FROM $table WHERE value<100000 ORDER BY value DESC) AS tbl1 GROUP BY itemid ORDER BY value DESC LIMIT 0,100";
 	$query_t = mysqli_real_escape_string($mysqli_t,$query_t);
 	
 	$top100_data = array();

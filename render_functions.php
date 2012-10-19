@@ -35,7 +35,7 @@ function render_backpack($backpack,$schema,$steamid,$online=true,$tutorial)
     $defindexes = get_tf2_allitem_node($backpack,"defindex"); //defindexes of all items
 
     $item_map_image_url = itemmap_filter_defindex_and_node($schema,"defindex",$defindexes,"image_url");
-    $item_map_name = itemmap_filter_defindex_and_node($schema,"defindex",$defindexes,"name");
+    $item_map_name = itemmap_filter_defindex_and_node($schema,"defindex",$defindexes,"item_name");
     $item_map_quality = itemmap_filter_defindex_and_node($backpack,"id",$ids,"quality");		
 	$item_map_defindex = itemmap_filter_defindex_and_node($backpack,"id",$ids,"defindex");	
     $item_map_custom_name = itemmap_filter_defindex_and_node($backpack,"id",$ids,"custom_name");
@@ -153,10 +153,10 @@ function render_backpack($backpack,$schema,$steamid,$online=true,$tutorial)
 		if ($itemquality=='11') $strange_item_rank = tf2_get_strange_kill_rank($attr_map_id_strange_kills[$key]);
         
         $desc = strtoupper($item_map_name[$value]);
-        $desc = str_replace('THE ','',$desc);
+        /*$desc = str_replace('THE ','',$desc);
 		$desc = str_replace('UPGRADEABLE TF_WEAPON_','',$desc);
         $desc = str_replace('PRIMARY','',$desc);
-		$desc = str_replace('_','',$desc);
+		$desc = str_replace('_','',$desc);*/
 		
         $pos = $item_map_inventory_pos[$key] & 0x0000FFFF;
 		
@@ -190,12 +190,12 @@ function render_backpack($backpack,$schema,$steamid,$online=true,$tutorial)
                     if ($custom_desc != null) echo "<span id='custom_desc'>\"$custom_desc\"</span><BR \>";
                     if (isset($strange_kills) && $strange_kills != null) echo "<span id='strange_kills'>Kills : $strange_kills</span><BR \>";
 					echo "<span style='font-size : 12px'>id : $key</span><BR \>";
-					if ($painted!=null) echo "<span style='font-size : 11px;'>painted : $painted_name</span><BR \>";
-					if ($particle_effect!=null) echo "<span style='font-size : 11px;'>effect: $particle_effect</span><BR \>";
-					if ($item_map_cannot_trade[$key]!=null) echo "<span style='font-size:10px;color:#ff4d4d;'>(untradeable)</span><BR \>";
-					if ($item_map_cannot_craft[$key]!=null) echo "<span style='font-size:10px;color:#ff4d4d;'>(uncraftable)</span><BR \>";
-                    if (isset($iid_tracked[$key])) echo "<span style='font-size:10px;color:#7CFC00'>Tracking : Yes</span>";
-                    else if ($quality=="strange") echo "<span style='font-size:10px;color:#ff4d4d;'>Tracking : No</span>";
+					if ($painted!=null) echo "<span style='font-size : 11px;display:block;'>painted : $painted_name</span>";
+					if ($particle_effect!=null) echo "<span style='font-size : 11px;display:block;'>effect: $particle_effect</span>";
+					if ($item_map_cannot_trade[$key]!=null) echo "<span style='font-size:10px;color:#ff4d4d;display:block;'>(untradeable)</span>";
+					if ($item_map_cannot_craft[$key]!=null) echo "<span style='font-size:10px;color:#ff4d4d;display:block;'>(uncraftable)</span>";
+                    if (isset($iid_tracked[$key])) echo "<span style='font-size:10px;color:#7CFC00;display:block;'>Tracking : Yes</span>";
+                    else if ($quality=="strange") echo "<span style='font-size:10px;color:#ff4d4d;display:block;'>Tracking : No</span>";
                 echo "</div>";
             echo "</div>";
         echo "</div>";
