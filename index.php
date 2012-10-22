@@ -278,7 +278,7 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
             }
             else if ($backpackxml->result!='15')
             {//normal render
-                render_backpack($backpack,$schema,$steamid,true,false);
+                render_backpack($backpack,$schema,$steamid,$profile,true,false);
                 render_ads();
                 render_footer();
                 save_xml($backpack,"/backpacks/{$steamid}_backpack.xml");	        
@@ -440,11 +440,13 @@ else if (isset($_GET['p']) && $_GET['p'] != '' && $_GET['p'] != null)
         include_once('scripts/dbconfig.php');
         
         $mysqli_t = mysqli_connect($host,$username,$password,$db);
+        mysqli_query($mysqli_t,"SET NAMES 'utf8'");
+
         if(mysqli_connect_errno()) echo mysqli_connect_error();
         $time = date('Ym');
         $table = "events_$time"; //select from current month's db
 
-        $query_t = "SELECT items_top_tracked.itemid, items_top_tracked.steamid, items_top_tracked.value, item_table.item_name FROM items_top_tracked LEFT JOIN item_table ON items_top_tracked.itemid = item_table.item_id ORDER BY value DESC LIMIT 0,25";
+        $query_t = "SELECT items_top_tracked.itemid, items_top_tracked.steamid, items_top_tracked.value, item_table.item_name, item_table.owner_name FROM items_top_tracked LEFT JOIN item_table ON items_top_tracked.itemid = item_table.item_id ORDER BY value DESC LIMIT 0,25";
         $query_t = mysqli_real_escape_string($mysqli_t,$query_t);
         
         $top25_data = array();
@@ -456,7 +458,7 @@ else if (isset($_GET['p']) && $_GET['p'] != '' && $_GET['p'] != null)
                 $top25_data[] = $row_top10;
             }
         }	
-        $query_right = "SELECT items_top_tracked.itemid, items_top_tracked.steamid, items_top_tracked.value, item_table.item_name FROM items_top_tracked LEFT JOIN item_table ON items_top_tracked.itemid = item_table.item_id ORDER BY value LIMIT 25,25";
+        $query_right = "SELECT items_top_tracked.itemid, items_top_tracked.steamid, items_top_tracked.value, item_table.item_name, item_table.owner_name FROM items_top_tracked LEFT JOIN item_table ON items_top_tracked.itemid = item_table.item_id ORDER BY value DESC LIMIT 25,25";
         $query_right = mysqli_real_escape_string($mysqli_t,$query_right);
         
         $top25_right_data = array();
@@ -478,7 +480,7 @@ else if (isset($_GET['p']) && $_GET['p'] != '' && $_GET['p'] != null)
             echo "<div class='top10_table_wrapper clear'>";
             echo "<div class='top10_left'>";
                 echo "<table class='top10'><tbody>";
-                echo "<tr><td id='rank'>rank</td><td id='itemid'>itemid</td><td id='steamid'>steamid</td><td id='kills'>kills</td><td id='weapontype'>weapon type</td></tr>";
+                echo "<tr><td id='rank'>rank</td><td id='itemid'>itemid</td><td id='kills'>kills</td><td id='weapontype'>weapon type</td><td id='steamid'>name</td></tr>";
                 $rank = 1;
                 foreach ($top25_data as $wep)
                 {
@@ -486,10 +488,11 @@ else if (isset($_GET['p']) && $_GET['p'] != '' && $_GET['p'] != null)
                     echo "<td id='rank'>$rank</td>";
                     foreach ($wep as $key => $value)
                     {
+                        if ($key=='steamid') $steamid = $value;
                         if ($key=='itemid') echo "<td><a href='?userid=$wep[steamid]&item=$value'>$value</a></td>";
                         if ($key=='item_name') echo "<td id='weapontype'>$value</td>";
                         if ($key=='value') echo "<td id='kills'>$value</td>";
-                        if ($key=='steamid') echo "<td><a href='?userid=$value'>$value</a></td>";
+                        if ($key=='owner_name') echo "<td><a href='?userid=$steamid'>$value</a></td>";
                     }
                     echo "</tr>";
                     $rank++;
@@ -498,17 +501,18 @@ else if (isset($_GET['p']) && $_GET['p'] != '' && $_GET['p'] != null)
             echo "</div>";
             echo "<div class='top10_right'>";
                 echo "<table class='top10'><tbody>";
-                echo "<tr><td id='rank'>rank</td><td id='itemid'>itemid</td><td id='steamid'>steamid</td><td id='kills'>kills</td><td id='weapontype'>weapon type</td></tr>";
+                echo "<tr><td id='rank'>rank</td><td id='itemid'>itemid</td><td id='kills'>kills</td><td id='weapontype'>weapon type</td><td id='steamid'>name</td></tr>";
                 foreach ($top25_right_data as $wep)
                 {
                     echo "<tr>";
                     echo "<td id='rank'>$rank</td>";
                     foreach ($wep as $key => $value)
                     {
+                        if ($key=='steamid') $steamid = $value;
                         if ($key=='itemid') echo "<td><a href='?userid=$wep[steamid]&item=$value'>$value</a></td>";
                         if ($key=='item_name') echo "<td id='weapontype'>$value</td>";
                         if ($key=='value') echo "<td id='kills'>$value</td>";
-                        if ($key=='steamid') echo "<td><a href='?userid=$value'>$value</a></td>";
+                        if ($key=='owner_name') echo "<td><a href='?userid=$steamid'>$value</a></td>";
                     }
                     echo "</tr>";
                     $rank++;

@@ -252,7 +252,6 @@ div.graph_wep_performance
     width : 570px;
     height : 500px;
     float:left;
-    margin-left:2%;
 }
 
 div.top10_contrib
@@ -279,7 +278,7 @@ div.contrib_wrapper{
 .contrib_table
 {
     text-align:center;
-    width:300px;
+    width:370px;
     font-size:16px;
 }
 
@@ -1126,6 +1125,7 @@ a:hover
 #steamid{
     color:#D986B5;
 }
+
 
 #kills{
     color:#86B5D9;

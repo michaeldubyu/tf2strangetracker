@@ -3,6 +3,8 @@ if (isset ($_GET['item'])){
 
     include_once('scripts/dbconfig.php');
     $mysqli2 = mysqli_connect($host,$username,$password,$db);
+    mysqli_query($mysqli2,"SET NAMES 'utf8'");
+
     if(mysqli_connect_errno()) echo mysqli_connect_error();
     
     $item = mysqli_real_escape_string($mysqli2, $_GET['item']);
@@ -28,7 +30,7 @@ if (isset ($_GET['item'])){
     $contrib_data = array();
     
     foreach ($ids as $key => $itemid){
-        $top_q = "SELECT * FROM items_top_tracked WHERE itemid='$itemid'";
+        $top_q = "SELECT items_top_tracked.*, item_table.owner_name FROM items_top_tracked, item_table WHERE items_top_tracked.itemid = item_table.item_id AND item_table.item_id ='$itemid'";
         $top_re = mysqli_query($mysqli2,$top_q);
         if (mysqli_num_rows($top_re)==0) unset($ids[$key]);
         else{

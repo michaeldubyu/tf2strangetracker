@@ -29,7 +29,7 @@ function render_profile_header($steamid,$avatar_full,$user_status,$display_name)
     echo '</div>';
 }
 
-function render_backpack($backpack,$schema,$steamid,$online=true,$tutorial)
+function render_backpack($backpack,$schema,$steamid,$profile,$online=true,$tutorial)
 {
     $ids = get_tf2_allitem_node($backpack,"id"); //ids of all items
     $defindexes = get_tf2_allitem_node($backpack,"defindex"); //defindexes of all items
@@ -76,6 +76,7 @@ function render_backpack($backpack,$schema,$steamid,$online=true,$tutorial)
                 echo '</div>';
             echo '</div>';
         echo '</div>';
+    $itemcount=0;
     
     echo '<div class="tf2_backpack_all">';
         if ($online==false) echo '<span id="error">WARNING : Steam Community may be down right now. I\'m currently using an older snapshot of your backpack.</span>';
@@ -85,7 +86,6 @@ function render_backpack($backpack,$schema,$steamid,$online=true,$tutorial)
     include_once('scripts/dbconfig.php');    
     $mysqli2 = new mysqli($host,$username,$password,$db) or die($mysqli2->error);
 	$mysqli2->set_charset('utf8');
-    $itemcount=0;
     
     $tracked_stranges = "SELECT * FROM `items` WHERE `steamid`='$steamid'";
     $iid_tracked = array();
@@ -152,25 +152,19 @@ function render_backpack($backpack,$schema,$steamid,$online=true,$tutorial)
 		$name = $item_map_name[$value];
 		if ($itemquality=='11') $strange_item_rank = tf2_get_strange_kill_rank($attr_map_id_strange_kills[$key]);
         
-        $desc = strtoupper($item_map_name[$value]);
-        /*$desc = str_replace('THE ','',$desc);
-		$desc = str_replace('UPGRADEABLE TF_WEAPON_','',$desc);
-        $desc = str_replace('PRIMARY','',$desc);
-		$desc = str_replace('_','',$desc);*/
-		
+        $desc = strtoupper($item_map_name[$value]);		
         $pos = $item_map_inventory_pos[$key] & 0x0000FFFF;
 		
 		$check = "SELECT count(*) FROM item_table WHERE item_id=$key";
 		$result = $mysqli2->query($check);
 		$count = $result->fetch_assoc();
-		if ($count['count(*)'] == 0)
-		{
-			//insert into db
-			if ($painted!=null || $particle_effect!=null) $has_attribute = 1;
-			else $has_attribute=0;
-			$insert = "INSERT INTO item_table (item_id,previous_id,quality,has_attributes,attribute1,attribute2,attribute3,item_defindex,item_name,item_custom_name,item_custom_desc,steam_id) VALUES ('$key','$previous_id','$quality','$has_attribute','$painted','$particle_effect','','$defindex','$desc','$custom_name','$custom_desc','$steamid')";
-			$mysqli2->query($insert);
-		}
+        
+        $name = simplexml_load_string($profile->steamID->asXML(),null,LIBXML_NOCDATA);
+        $display_name = strtoupper($name);
+        if ($painted!=null || $particle_effect!=null) $has_attribute = 1;
+		else $has_attribute=0;
+		$insert = "REPLACE INTO item_table (item_id,previous_id,quality,has_attributes,attribute1,attribute2,attribute3,item_defindex,item_name,item_custom_name,item_custom_desc,steam_id,owner_name) VALUES ('$key','$previous_id','$quality','$has_attribute','$painted','$particle_effect','','$defindex','$desc','$custom_name','$custom_desc','$steamid',$display_name)";
+		$mysqli2->query($insert);
 		
         echo "<div class='item' inventory_position=\"{$pos}\" item=\"{$desc}\" id='$quality'>";
         if ($tutorial!="true") echo "<a href='?userid={$steamid}&item={$key}'>";
@@ -317,7 +311,8 @@ function render_info_panel($customURL,$steamid,$user_status,$mostplayedgame,$mos
 
 function render_ads()
 {
-echo '<div style="width:728px;height:90px;margin:0px auto;padding:15px;"><script type="text/javascript"><!--
+echo '<div style="width:728px;height:90px;margin:0px auto;padding:15px;"><div style="width:728px;margin:0px auto;"><script type="text/javascript">
+<!--
 google_ad_client = "ca-pub-9354358608748913";
 /* Lowerboard */
 google_ad_slot = "8678489508";
@@ -327,7 +322,7 @@ google_ad_height = 90;
 </script>
 <script type="text/javascript"
 src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
-</script></div>';
+</script></div></div>';
 }
 
 ?>
