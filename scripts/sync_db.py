@@ -43,7 +43,7 @@ try:
     cur.execute('SET CHARACTER SET utf8;')
     cur.execute('SET character_set_connection=utf8;')
 
-    cur.execute("SELECT DISTINCT(`steam_id`) FROM `item_table`")
+    cur.execute("select items.steamid,items.itemid from items where items.itemid NOT IN (select distinct(item_table.item_id) from item_table) GROUP BY items.itemid")
 
     data = cur.fetchall()
 
