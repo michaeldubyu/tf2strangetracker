@@ -13,7 +13,7 @@
     if (isset($_GET['itemid']) && $_GET['itemid']!=null) 
     {
         $itemid = $_GET['itemid'];
-        $weeklyQuery = "SELECT DISTINCT value,time FROM $table WHERE `time` >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)  AND `itemid` = $itemid group by value";
+        $weeklyQuery = "SELECT value,time FROM $table WHERE `time` >= UNIX_TIMESTAMP(DATE_SUB(NOW(),INTERVAL 30 DAY))  AND `itemid` = $itemid group by value";
         $weeklyQuery = mysqli_real_escape_string($mysqli2,$weeklyQuery);                
         $data_weekly = array();
         

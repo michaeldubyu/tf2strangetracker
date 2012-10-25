@@ -206,6 +206,7 @@ function render_backpack($backpack,$schema,$steamid,$profile,$online=true,$tutor
 	$mysqli2->close();
     echo '</div>';
     echo '</div>';
+    render_ads();
     echo '</div>';
 }
 
@@ -311,7 +312,7 @@ function render_info_panel($customURL,$steamid,$user_status,$mostplayedgame,$mos
 
 function render_ads()
 {
-echo '<div style="width:728px;height:90px;margin:0px auto;padding:15px;"><div style="width:728px;margin:0px auto;"><script type="text/javascript">
+echo '<div style="width:80%;height:90px;margin:0px auto;padding:20px;"><div style="width:728px;margin:0px auto;"><script type="text/javascript">
 <!--
 google_ad_client = "ca-pub-9354358608748913";
 /* Lowerboard */

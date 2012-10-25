@@ -15,6 +15,6 @@
     $avatar_full = simplexml_load_string($profile->avatarMedium->asXML(), null, LIBXML_NOCDATA);
 
     render_profile_header($steamid,$avatar_full,$user_status,$display_name);        
-    render_backpack($backpack,$schema,$steamid,true,$tutorial);    
+    render_backpack($backpack,$schema,$steamid,$schema,true,$tutorial);    
     render_footer();        
 ?>

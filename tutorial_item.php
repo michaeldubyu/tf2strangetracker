@@ -87,6 +87,7 @@
             echo '</div>';
         echo '</div>';
     }
+    render_ads();
     echo '</div>';
     render_footer();  
 

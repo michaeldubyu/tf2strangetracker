@@ -30,17 +30,20 @@ if (isset($_GET['logout'])){
 
 </script>
         <META http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="description" content="Team Fortress 2 Strange Weapon Tracking Website!" />
 		<link rel="stylesheet" type="text/css" href="tf2_tracker.css" />
         <link rel="stylesheet" type="text/css" href="lib/gritter/css/jquery.gritter.css" />
         <script type="text/javascript" src="lib/jquery-1.7.2.min.js"></script>
         <script type="text/javascript" src="lib/jquery.tinysort.min.js"></script>
         <script type="text/javascript" src="lib/flot/jquery.flot.js"></script>
+        <script type="text/javascript" src="lib/flot/jquery.flot.selection.js"></script>
         <script type="text/javascript" src="lib/flot/jquery.flot.pie.js"></script>
         <script type="text/javascript" src="lib/backpack.js"></script>
         <script type="text/javascript" src="lib/graphs.js"></script>
         <script type="text/javascript" src="lib/tutorial.js"></script>
         <script type="text/javascript" src="lib/tutorial_item.js"></script>
         <script type="text/javascript" src="lib/gritter/js/jquery.gritter.js"></script>
+        <script type="text/javascript" src="lib/twitter.js"></script>
         <!--[if IE]><script type="text/javascript" src="lib/flot/excanvas.js"></script><![endif]-->
 	</head>
 	
@@ -265,6 +268,8 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
                             echo "<li><a href='/?userid={$steamid}&item={$itemid}&stop=true' class='contentLink'>STOP TRACKING ITEM</a></li>";
                         }
                         else echo "<li><a href='/?userid={$steamid}&item={$itemid}&track=true' class='contentLink'>START TRACKING ITEM</a></li>";
+                        echo "<li><a class='contentLink' id='zoom_in'>ZOOM INTO SELECTION</a></li>";
+                        echo "<li><a class='contentLink' id='zoom_out'>RESET GRAPHS</a></li>";
                        echo "</ul>";
                        if (!$loggedIn && isset($_GET['stop'])) echo "<span id='admin_error'>You're not logged in as the owner!</span>";
                    echo '</div>';
@@ -279,7 +284,6 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
             else if ($backpackxml->result!='15')
             {//normal render
                 render_backpack($backpack,$schema,$steamid,$profile,true,false);
-                render_ads();
                 render_footer();
                 save_xml($backpack,"/backpacks/{$steamid}_backpack.xml");	        
                 save_xml($profile,"/profiles/{$steamid}_profile.xml"); 
@@ -518,9 +522,9 @@ else if (isset($_GET['p']) && $_GET['p'] != '' && $_GET['p'] != null)
                     $rank++;
                 }
                 echo "</tbody></table>";
-            echo "</div>";
-            echo "</div>";            
-            render_ads();
+           echo "</div>";
+        echo "</div>";            
+        render_ads();
         echo "</div>";
         render_footer();
     }
@@ -651,9 +655,10 @@ else
             echo '<div class="contrib_wrapper clear"><div class="graph_wep_performance"></div><BR \>';
             echo '<div class="top10_contrib"><img id="loading" src="lib/spin.gif" /><h3 style="margin-top:150px;">Hover over each slice to see details!</h3><table class="contrib_table"></table></div></div>';
 	echo '</div>';
-    echo '</div>';
-      // echo '</div>';
+    echo "<div class='twitter_container'><div id='jstweets'><h2><a style='color : #7eb3cd;' href='http://twitter.com/tf2stranges'>FROM TWITTER</a> - <a href='https://twitter.com/intent/user?screen_name=tf2stranges'>FOLLOW @TF2STRANGES</a></h2></div></div>";
     render_ads();
+    echo '</div>';
+
     render_footer();
 }
 
