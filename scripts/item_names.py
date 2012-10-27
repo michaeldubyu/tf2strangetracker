@@ -25,7 +25,7 @@ try:
     cur.execute('SET CHARACTER SET utf8;')
     cur.execute('SET character_set_connection=utf8;')
 
-    cur.execute("SELECT DISTINCT(`item_defindex`) FROM `item_table` where item_name=''")
+    cur.execute("SELECT DISTINCT(`item_defindex`) FROM `item_table`")
 
     data = cur.fetchall()
 
@@ -37,6 +37,7 @@ try:
         for item in schema.findall("./items/item"):
             if (item.find("defindex").text==defindex):
                 item_name = item.find("item_name").text
+                item_name = item_name.upper()
 
                 cur.execute("UPDATE item_table SET `item_name`=%s WHERE `item_defindex`=%s" ,(item_name,defindex))
                 con.commit()

@@ -248,7 +248,7 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
 								echo "</div>";						
 							echo "</div>";
 							echo "<div class='graph_weekly_wrapper'>";
-								echo "<span id='graph_weekly'><h1 style='text-align:center; color:#d986b5;'>in the last while</h1></span>";
+								echo "<span id='graph_weekly'><h1 style='text-align:center; color:#d986b5;'>in this month so far</h1></span>";
 								echo "<div class='graph_weekly'><img id='loading' src='lib/spin.gif' />";
 								echo "</div>";						
 							echo "</div>";
@@ -272,6 +272,11 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
                         echo "<li><a class='contentLink' id='zoom_out'>RESET GRAPHS</a></li>";
                        echo "</ul>";
                        if (!$loggedIn && isset($_GET['stop'])) echo "<span id='admin_error'>You're not logged in as the owner!</span>";
+                   echo '</div>';
+                   echo '<div class="sidebar_stats">';
+                       echo "<div id='stat_title'>STATS</div>";
+                       echo "<ul id = 'stat_list' type='none'>";
+                       echo "</ul>";
                    echo '</div>';
                 echo '</div>';
                 echo '</div>';
@@ -396,7 +401,7 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
                                     echo "</div>";						
                                 echo "</div>";
                                 echo "<div class='graph_weekly_wrapper'>";
-                                    echo "<span id='graph_weekly'><h1 style='text-align:center; color:#d986b5;'>in the last while</h1></span>";
+                                    echo "<span id='graph_weekly'><h1 style='text-align:center; color:#d986b5;'>in this month so far</h1></span>";
                                     echo "<div class='graph_weekly'><img id='loading' src='lib/spin.gif' />";
                                     echo "</div>";						
                                 echo "</div>";        
@@ -655,7 +660,7 @@ else
             echo '<div class="contrib_wrapper clear"><div class="graph_wep_performance"></div><BR \>';
             echo '<div class="top10_contrib"><img id="loading" src="lib/spin.gif" /><h3 style="margin-top:150px;">Hover over each slice to see details!</h3><table class="contrib_table"></table></div></div>';
 	echo '</div>';
-    echo "<div class='twitter_container'><div id='jstweets'><h2><a style='color : #7eb3cd;' href='http://twitter.com/tf2stranges'>FROM TWITTER</a> - <a href='https://twitter.com/intent/user?screen_name=tf2stranges'>FOLLOW @TF2STRANGES</a></h2></div></div>";
+    echo "<div class='twitter_container'><h2><div id='jstweets'><img id='twitter_img' src='lib/twitter.png' \><a style='color : #7eb3cd;' href='http://twitter.com/tf2stranges'>FROM TWITTER</a> - <a href='https://twitter.com/intent/user?screen_name=tf2stranges'>FOLLOW @TF2STRANGES</a><BR \><BR \></h2></div></div>";
     render_ads();
     echo '</div>';
 

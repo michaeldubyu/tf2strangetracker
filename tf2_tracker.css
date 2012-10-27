@@ -250,7 +250,7 @@ div.weapon_pie
 div.graph_wep_performance
 {
     width : 570px;
-    height : 500px;
+    height : 520px;
     float:left;
 }
 
@@ -297,7 +297,6 @@ div.contrib_wrapper{
 .twitter_container h2{
     text-align:center;
     color : #7eb3cd;
-    padding-top:15px;
 }
 
 #jstweets{
@@ -305,13 +304,20 @@ div.contrib_wrapper{
     border-radius:8px;
     min-width:950px;
     margin:0px auto;
+    padding:10px;
 }
 
 .twitterpost{
     text-align:center;
     font-size:18px;
     color:#A3A3A3;
-    padding-bottom:20px;
+}
+
+#twitter_img{
+    margin-right: 10px;
+    margin-top: 10px;
+    width:16px;
+    height:16px;
 }
 
 #loading
@@ -437,8 +443,22 @@ div.sidebar
     color : #FFFFFF;
 }
 
+div.sidebar_stats{
+    float:left;
+    width:375px;
+    background: #2d2828;
+    margin-left:20px;
+    border-radius:18px;    
+    margin-top:20px;
+}
+
 #admin_list{
     color : #FFFFFF;
+    padding-bottom:10px;
+}
+
+#stat_list{
+    color : darkOrange;
     padding-bottom:10px;
 }
 
@@ -450,6 +470,14 @@ div.sidebar
 }
 
 div #admin_title{
+    font-size:30px;
+    text-align:center;
+    margin-top:30px;
+    color:#b5d986;
+    padding-bottom:20px;
+}
+
+div #stat_title{
     font-size:30px;
     text-align:center;
     margin-top:30px;
