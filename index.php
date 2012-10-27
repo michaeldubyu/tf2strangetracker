@@ -243,12 +243,12 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
 
 							//show graphs 	                                            							
 							echo "<div class='graph_daily_wrapper'>";
-								echo "<span id='graph_24hrs'><h1 style='text-align:center; color:#86b5d9;'>in the last 24 hours</h1></span>";
+								echo "<div id='graph_24hrs'><h1 style='text-align:center; color:#86b5d9;'>in the last 24 hours<a id='zoom_in_daily'><img style='float:right;' src='lib/zoom.png' \></a></h1></div>";
 								echo "<div class='graph_daily'><img id='loading' src='lib/spin.gif' />";
 								echo "</div>";						
 							echo "</div>";
 							echo "<div class='graph_weekly_wrapper'>";
-								echo "<span id='graph_weekly'><h1 style='text-align:center; color:#d986b5;'>in this month so far</h1></span>";
+								echo "<div id='graph_weekly'><h1 style='text-align:center; color:#d986b5;'>in this month so far<a id='zoom_in_weekly'><img style='float:right;' src='lib/zoom.png' \></a></h1></div>";
 								echo "<div class='graph_weekly'><img id='loading' src='lib/spin.gif' />";
 								echo "</div>";						
 							echo "</div>";
@@ -268,7 +268,6 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
                             echo "<li><a href='/?userid={$steamid}&item={$itemid}&stop=true' class='contentLink'>STOP TRACKING ITEM</a></li>";
                         }
                         else echo "<li><a href='/?userid={$steamid}&item={$itemid}&track=true' class='contentLink'>START TRACKING ITEM</a></li>";
-                        echo "<li><a class='contentLink' id='zoom_in'>ZOOM INTO SELECTION</a></li>";
                         echo "<li><a class='contentLink' id='zoom_out'>RESET GRAPHS</a></li>";
                        echo "</ul>";
                        if (!$loggedIn && isset($_GET['stop'])) echo "<span id='admin_error'>You're not logged in as the owner!</span>";
@@ -396,12 +395,12 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
                             {
                                 //show graphs 	                                            							
                                 echo "<div class='graph_daily_wrapper'>";
-                                    echo "<span id='graph_24hrs'><h1 style='text-align:center; color:#86b5d9;'>in the last 24 hours</h1></span>";
+                                    echo "<div id='graph_24hrs'><h1 style='text-align:center; color:#86b5d9;'>in the last 24 hours</h1></div>";
                                     echo "<div class='graph_daily'><img id='loading' src='lib/spin.gif' />";
                                     echo "</div>";						
                                 echo "</div>";
                                 echo "<div class='graph_weekly_wrapper'>";
-                                    echo "<span id='graph_weekly'><h1 style='text-align:center; color:#d986b5;'>in this month so far</h1></span>";
+                                    echo "<div id='graph_weekly'><h1 style='text-align:center; color:#d986b5;'>in this month so far</h1></div>";
                                     echo "<div class='graph_weekly'><img id='loading' src='lib/spin.gif' />";
                                     echo "</div>";						
                                 echo "</div>";        

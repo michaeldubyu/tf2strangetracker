@@ -163,7 +163,7 @@ function tf2_get_strange_kill_rank($kill_count)
 	elseif ($kill_count>='500' && $kill_count<'750') return "wicked nasty";
 	elseif ($kill_count>='750' && $kill_count<'999') return "positively inhumane"; 
 	elseif ($kill_count==999) return "totally ordinary";
-	elseif ($kill_count>='1000' && $kill_count<'1500') return "";     
+	elseif ($kill_count>='1000' && $kill_count<'1500') return "face melting";     
 	elseif ($kill_count>='1500' && $kill_count<'2500') return "rage-inducing"; 
 	elseif ($kill_count>='2500' && $kill_count<'5000') return "server-clearing";
 	elseif ($kill_count>='5000' && $kill_count<'7500') return "epic"; 

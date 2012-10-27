@@ -1199,3 +1199,12 @@ a:hover
   *zoom: 1;
 }
 
+#zoom_in_daily
+{
+    float:right;
+}
+
+#zoom_in_weekly
+{
+    float:right;
+}
