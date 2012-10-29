@@ -90,36 +90,7 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
 
             $schema = simplexml_load_file("{$_SERVER['DOCUMENT_ROOT']}/lib/schema.xml");		
 
-            if (isset($_GET['track_all']) && $_GET['track_all'] != '' && $_GET['track_all'] != null)
-			{
-				$ids = get_tf2_allitem_node($backpack,"id"); //ids of all items
-				$item_map_quality = itemmap_filter_defindex_and_node($backpack,"id",$ids,"quality");		
-
-                include_once('scripts/dbconfig.php');
-                $mysqli2 = new mysqli($host,$username,$password,$db) or die($mysqli->error);
-				
-				foreach ($item_map_quality as $key => $value)
-				{
-					if ($value!='11') unset($item_map_quality[$key]);
-				}
-				
-				foreach ($item_map_quality as $id => $quality)
-				{
-					$query = "SELECT * FROM `items` WHERE `itemid`=$id";
-					$result = $mysqli2->query($query);
-					
-					if ($result->num_rows=='0') 
-					{
-						$i = "INSERT INTO `items` (`steamid`,`itemid`) VALUES ('$steamid','$id')";
-						$mysqli2->query($i) or die ($mysqli2->error);
-                        $update = "UPDATE item_table SET `tracked`='1' WHERE item_id='$itemid' AND steam_id='$steamid'";
-
-                        $mysqli2->query($update) or die ($mysqli2->error);
-					}
-				}
-				$mysqli2->close();
-			}
-            else if (isset($_GET['item']) && $_GET['item'] != '' && $_GET['item'] != null)
+            if (isset($_GET['item']) && $_GET['item'] != '' && $_GET['item'] != null)
             {
                 $itemid = $_GET['item'];
                 
@@ -243,12 +214,12 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
 
 							//show graphs 	                                            							
 							echo "<div class='graph_daily_wrapper'>";
-								echo "<div id='graph_24hrs'><h1 style='text-align:center; color:#86b5d9;'>in the last 24 hours<a id='zoom_in_daily'><img style='float:right;' src='lib/zoom.png' \></a></h1></div>";
+								echo "<div id='graph_24hrs'><h1 style='text-align:center; color:#86b5d9;'>in the last 24 hours<a id='zoom_in_daily'><img style='height:22px;width:22px;float:right;' src='lib/zoom.png' \></a><a id='reset_daily'><img style='height:22px;width:22px;float:right;' src='lib/undo.png' \></a></h1></div>";
 								echo "<div class='graph_daily'><img id='loading' src='lib/spin.gif' />";
 								echo "</div>";						
 							echo "</div>";
 							echo "<div class='graph_weekly_wrapper'>";
-								echo "<div id='graph_weekly'><h1 style='text-align:center; color:#d986b5;'>in this month so far<a id='zoom_in_weekly'><img style='float:right;' src='lib/zoom.png' \></a></h1></div>";
+								echo "<div id='graph_weekly'><h1 style='text-align:center; color:#d986b5;'>in this month so far<a id='zoom_in_weekly'><img style='height:22px;width:22px;float:right;' src='lib/zoom.png' \></a><a id='reset_weekly'><img style='height:22px;width:22px;float:right;' src='lib/undo.png' \></a></h1></div>";
 								echo "<div class='graph_weekly'><img id='loading' src='lib/spin.gif' />";
 								echo "</div>";						
 							echo "</div>";
@@ -268,13 +239,12 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
                             echo "<li><a href='/?userid={$steamid}&item={$itemid}&stop=true' class='contentLink'>STOP TRACKING ITEM</a></li>";
                         }
                         else echo "<li><a href='/?userid={$steamid}&item={$itemid}&track=true' class='contentLink'>START TRACKING ITEM</a></li>";
-                        echo "<li><a class='contentLink' id='zoom_out'>RESET GRAPHS</a></li>";
                        echo "</ul>";
                        if (!$loggedIn && isset($_GET['stop'])) echo "<span id='admin_error'>You're not logged in as the owner!</span>";
                    echo '</div>';
                    echo '<div class="sidebar_stats">';
                        echo "<div id='stat_title'>STATS</div>";
-                       echo "<ul id = 'stat_list' type='none'>";
+                       echo "<ul id = 'stat_list'>";
                        echo "</ul>";
                    echo '</div>';
                 echo '</div>';
@@ -294,136 +264,6 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
 
                 /*info panel - IT'S DEAD JUST LET IT DIE - 
                 render_info_panel($customURL,$steamid,$user_status,$mostplayedgame,$mostplayedhours);*/
-            }
-        }
-		else 
-        {//steam community is offline or response is bad
-			$profilexml = "{$_SERVER['DOCUMENT_ROOT']}/profiles/{$steamid}_profile.xml";
-            $backpackxml = "{$_SERVER['DOCUMENT_ROOT']}/backpacks/{steamid}_backpack.xml";
-            if (file_exists($profilexml) && file_exists($backpackxml) && $backpackxml->result!='15')
-			{
-				$profile = simplexml_load_file("{$_SERVER['DOCUMENT_ROOT']}/profiles/{$steamid}_profile.xml");
-				$name = simplexml_load_string($profile->steamID->asXML(),null,LIBXML_NOCDATA);
-				$display_name = strtoupper($name);
-				$user_status = strtolower(simplexml_load_string($profile->onlineState->asXML(),null,LIBXML_NOCDATA));
-				$avatar_full = simplexml_load_string($profile->avatarMedium->asXML(), null, LIBXML_NOCDATA);
-				$offline_loading=true;
-				
-				render_profile_header($steamid,$avatar_full,$user_status,$display_name);	
-				
-				$backpack = simplexml_load_file("{$_SERVER['DOCUMENT_ROOT']}/backpacks/{$steamid}_backpack.xml");
-				$schema = simplexml_load_file("{$_SERVER['DOCUMENT_ROOT']}/lib/schema.xml");		
-				
-				if (isset($_GET['item']) && $_GET['item'] != '' && $_GET['item'] != null)
-				{
-					$itemid = $_GET['item'];
-					
-					$item = array();
-					$items[] = $itemid;
-					$item_defindex = itemmap_filter_defindex_and_node($backpack,"id",$items,"defindex");
-					$single_defindex = $item_defindex[$itemid];
-									
-					$defindex = array();
-					$defindex[] = $item_defindex[$itemid];
-					$item_image_url = itemmap_filter_defindex_and_node($schema,"defindex",$defindex,"image_url_large");
-					
-					$item_name = itemmap_filter_defindex_and_node($schema,"defindex",$defindex,"name");
-					$item_quality = itemmap_filter_defindex_and_node($backpack,"id",$items,"quality");
-					$item_custom_name = itemmap_filter_defindex_and_node($backpack,"id",$items,"custom_name");
-					$item_custom_desc = itemmap_filter_defindex_and_node($backpack,"id",$items,"custom_desc");
-					$item_strange_kills = attrmap_filter_defindex_and_node($backpack,$items,"214","value");
-					$item_previous_id = itemmap_filter_defindex_and_node($backpack,"id",$items,"original_id");
-					
-					$single_quality = tf2_get_quality($item_quality[$itemid]);
-					$single_item_name = $item_name[$single_defindex];
-					$single_item_custom_desc = $item_custom_desc[$itemid];
-					$single_item_custom_name = $item_custom_name[$itemid];
-					@$single_item_strange_kills = $item_strange_kills[$itemid];
-					@$single_item_previous_id = $item_previous_id[$itemid];
-					  
-					$single_item_name = str_replace('The ','',$single_item_name);
-					$single_item_name = str_replace('Upgradeable TF_WEAPON_','',$single_item_name);
-
-					echo '<div class="item_page_all clear">';
-					render_item_desc($steamid,$itemid, $single_quality,$item_image_url,$single_defindex, $single_item_strange_kills,$single_item_name, $single_item_custom_name,$single_item_custom_desc,$single_item_previous_id,$single_item_strange_kills, false);         
-						echo '<div class="graph_sidebar_wrapper">';
-                        echo '<div class="stat_all">';
-						if ($single_quality=='strange')
-						{
-                            echo '<div class="title">PERFORMANCE</div>';
-                            echo '<div class="graph_all">';
-                            include_once('scripts/dbconfig.php');                    
-                            $mysqli = new mysqli($host,$username,$password,$db) or die($mysqli->error);
-                                                    
-                            $query = "SELECT * FROM `items` WHERE `itemid`=$itemid";
-                            $result = $mysqli->query($query);
-                            $check = "SELECT * from user WHERE `steamid`='$_GET[userid]'";
-                            $re = $mysqli->query($check);
-                            $rows = $re->fetch_assoc();
-            
-                            $entries = "SELECT * FROM `$table` WHERE `itemid`=$itemid";
-                            $entry_re = $mysqli->query($entries);
-
-                            $track_privacy = 0; //default values for privacy
-                            $stat_privacy = 0; //public tracking and stat viewing options
-                            $wep_steamid = 0; //manual management of tracking
-                            
-                            if (isset($rows['track_privacy']) && $rows['track_privacy']!=null) $track = $rows['track_privacy'];
-                            if (isset($rows['stat_privacy']) && $rows['stat_privacy']!=null) $stat = $rows['stat_privacy'];
-                            if (isset($rows['steamid']) && $rows['steamid']!=null) $wep_steamid = $rows['steamid'];    
-                                
-                            if ($result->num_rows=='0' || ($entry_re->num_rows>0 && isset($_GET['track']))) //if no data exists, should begin tracking
-                            {
-                                echo "<span id='no_data'>No data available for this item. <a href='?userid={$steamid}&item={$itemid}&track=true'>Start tracking?</a></span>";
-                                if (isset($_GET['track']) && $_GET['track']=='true')
-                                {//track, iff privacy is set to public
-                                    if ($track==0 || (isset($_SESSION['steamID']) && ($_GET['userid']==$_SESSION['steamID']))){
-                                    //if track privacy options are public, OR the user is logged in and looking at their own profile
-                                        
-                                        //add steamid,itemid to users table
-                                        $insert = "INSERT INTO `items` (`id`,`steamid`,`itemid`) VALUES ('','$steamid','$itemid')";
-                                        $q = $mysqli->query($insert) or die ($mysqli->error);
-                                        
-                                        $update = "UPDATE `item_table` SET `tracked`='1' WHERE item_id='$itemid' AND steam_id='$steamid'";
-                                        $k = $mysqli->query($update) or die ($mysqli->error);
-                                        
-                                    echo "<span id='no_data'>Item added. I'll be checking this item every hour and you'll soon able to see more in depth data.</span>";
-                    				}
-                                }else echo "<span id='no_data'>Sorry! This user has requested that their data remain private.</span>";
-                            }
-                            if (($stat==0 || (isset($_SESSION['steamID']) && $_GET['userid']==$_SESSION['steamID']))  && $result->num_rows>0)
-                            {
-                                //show graphs 	                                            							
-                                echo "<div class='graph_daily_wrapper'>";
-                                    echo "<div id='graph_24hrs'><h1 style='text-align:center; color:#86b5d9;'>in the last 24 hours</h1></div>";
-                                    echo "<div class='graph_daily'><img id='loading' src='lib/spin.gif' />";
-                                    echo "</div>";						
-                                echo "</div>";
-                                echo "<div class='graph_weekly_wrapper'>";
-                                    echo "<div id='graph_weekly'><h1 style='text-align:center; color:#d986b5;'>in this month so far</h1></div>";
-                                    echo "<div class='graph_weekly'><img id='loading' src='lib/spin.gif' />";
-                                    echo "</div>";						
-                                echo "</div>";        
-                            }
-                            else {
-                                echo "<span id='no_data'>Sorry! This user has requested that their data remain private.</span>";
-                            }
-						}  
-							echo '</div>';
-						echo '</div>';
-					echo '</div>';
-                    echo '</div>';
-					//render_ads();
-					render_footer();
-				}else{
-					render_backpack($backpack,$schema,$steamid,false,false);
-                }
-            }
-            else
-            {
-				render_plain_header();
-				echo "<p id='error'>Steam Community may be currently offline, and I have no offline snapshot of your backpack. How unfortunate!<BR \>The owner of this account should also check their privacy settings.</p>";
-				render_footer();
             }
         }
 	}

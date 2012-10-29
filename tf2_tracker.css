@@ -84,7 +84,6 @@ div.item_desc_all
 {
     text-align : center;
     min-width: 950px;
-    max-width: 1200px;
     margin:0px auto;
     background: #2d2828;
     border-radius:15px;    
@@ -95,6 +94,10 @@ div.item_desc_all
 div.item_wrapper{
     margin-top:10px;
     margin-bottom:10px;
+    margin-left:auto;
+    margin-right:auto;
+    width: 80%;
+    min-width: 1200px;
 }
 
 div.help_content
@@ -523,7 +526,7 @@ div.text
 	padding : 5px 5px 5px 5px;
     float:left;
 	text-align : center;
-    width:910px;
+    width:930px;
 	margin-top : 5px;
     margin-left:80px;
 }
@@ -1207,4 +1210,9 @@ a:hover
 #zoom_in_weekly
 {
     float:right;
+}
+
+#stat_value
+{
+    color : #ccc;
 }
