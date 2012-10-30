@@ -129,17 +129,16 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
                 echo '</div>';
                 echo '</div>';
             }
-            render_ads();
-            render_footer();
+            else if ($backpackxml->result!='15')
+            {//normal render
+                render_backpack($backpack,$schema,$steamid,$profile,true,false);
+                save_xml($backpack,"/backpacks/{$steamid}_backpack.xml");	        
+                save_xml($profile,"/profiles/{$steamid}_profile.xml"); 
+            }
         }
-        else if ($backpackxml->result!='15')
-        {//normal render
-            render_backpack($backpack,$schema,$steamid,$profile,true,false);
-            render_footer();
-            save_xml($backpack,"/backpacks/{$steamid}_backpack.xml");	        
-            save_xml($profile,"/profiles/{$steamid}_profile.xml"); 
-        }
-       
+        render_ads();
+        echo '</div>';
+        render_footer();       
 	}
 	else
     {

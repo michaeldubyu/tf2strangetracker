@@ -159,7 +159,8 @@ function render_backpack($backpack,$schema,$steamid,$profile,$online=true,$tutor
         $display_name = strtoupper($name);
         if ($painted!=null || $particle_effect!=null) $has_attribute = 1;
 		else $has_attribute=0;
-		$insert = "REPLACE INTO item_table (item_id,previous_id,quality,has_attributes,attribute1,attribute2,attribute3,item_defindex,item_name,item_custom_name,item_custom_desc,steam_id,owner_name) VALUES ('$key','$previous_id','$quality','$has_attribute','$painted','$particle_effect','','$defindex','$desc','$custom_name','$custom_desc','$steamid',$display_name)";
+		
+        $insert = "REPLACE INTO item_table (item_id,previous_id,quality,has_attributes,attribute1,attribute2,attribute3,item_defindex,item_name,item_custom_name,item_custom_desc,steam_id,owner_name) VALUES ('$key','$previous_id','$quality','$has_attribute','$painted','$particle_effect','','$defindex','$desc','$custom_name','$custom_desc','$steamid',$display_name)";
 		$mysqli2->query($insert);
 		
         echo "<div class='item' inventory_position=\"{$pos}\" item=\"{$desc}\" id='$quality'>";
@@ -202,8 +203,6 @@ function render_backpack($backpack,$schema,$steamid,$profile,$online=true,$tutor
 	$mysqli2->close();
     echo '</div>';
     echo '</div>';
-    render_ads();
-    echo '</div>';
 }
 
 function render_item_desc($steamid,$itemid, $single_quality,$item_image_url,$single_defindex, $single_item_strange_kills, $single_item_name, $single_item_custom_name,$single_item_custom_desc,$single_item_previous_id,$single_item_strange_kills,$tutorial)        
@@ -231,8 +230,18 @@ function render_item_desc($steamid,$itemid, $single_quality,$item_image_url,$sin
                     if ($single_item_strange_kills!=null) echo "<span id='item_desc_strange_kills'>Kills : $single_item_strange_kills</span><BR \>";
                 echo '</div>';
         }
-        else echo "<div id='item_dne'>Sorry! This item does not exist! It may have changed IDS - check the <a class='contentLink' href='?userid={$steamid}'>owner's backpack!</a></div>";
-            echo '</div>';
+        else {
+            echo "<div id='item_dne'>Sorry! This item does not exist! It may have changed IDS - check the <a class='contentLink' href='?userid={$steamid}'>owner's backpack!</a></div>";
+            include_once('scripts/dbconfig.php');
+            
+            $mysqli_d = mysqli_connect($host,$username,$password,$db);
+            $delete_it = "DELETE FROM item_table WHERE item_id = $itemid";
+            $delete_i = "DELETE FROM items WHERE itemid = $itemid";
+            
+            mysqli_query($mysqli_d,$delete_it);
+            mysqli_query($mysqli_d,$delete_i);
+        }    
+        echo '</div>';
         echo '</div>';
         echo '</div>';
 
