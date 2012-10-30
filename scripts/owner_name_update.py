@@ -16,7 +16,7 @@ def get_profile_xml(steamid):
     url = "http://steamcommunity.com/profiles/"+steamid+"/?xml=1"
     c = pycurl.Curl()
     c.setopt(c.URL,url)
-    c.setopt(c.CONNECTTIMEOUT, 2)
+    c.setopt(c.CONNECTTIMEOUT, 10)
     c.setopt(c.FOLLOWLOCATION, 1)
     c.setopt(c.TIMEOUT, 10)
     c.setopt(pycurl.NOSIGNAL, 1)

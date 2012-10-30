@@ -1,1 +1,4 @@
 *.xml
+scripts/update.py
+scripts/sync_db.py
+scripts/update_item_owner_names.py

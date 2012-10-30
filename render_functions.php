@@ -155,10 +155,6 @@ function render_backpack($backpack,$schema,$steamid,$profile,$online=true,$tutor
         $desc = strtoupper($item_map_name[$value]);		
         $pos = $item_map_inventory_pos[$key] & 0x0000FFFF;
 		
-		$check = "SELECT count(*) FROM item_table WHERE item_id=$key";
-		$result = $mysqli2->query($check);
-		$count = $result->fetch_assoc();
-        
         $name = simplexml_load_string($profile->steamID->asXML(),null,LIBXML_NOCDATA);
         $display_name = strtoupper($name);
         if ($painted!=null || $particle_effect!=null) $has_attribute = 1;
@@ -214,29 +210,142 @@ function render_item_desc($steamid,$itemid, $single_quality,$item_image_url,$sin
 {
         echo '<div class="item_wrapper clear">';
         echo '<div class="item_desc_all clear">';
-        if ($tutorial!=true)echo "<a class='back_button' style='text-decoration:underline;' href='?userid={$steamid}'>&lt;&lt;BACK TO BACKPACK</a><br \>";
-        else echo "<a class='back_button' style='text-decoration:underline;' href='?p=tutorial'>&lt;&lt;BACK TO BACKPACK</a><br \>";
-        
-            echo '<div class="item_page_img">';
-                echo "<img style='margin-left:10px;' height='175' width='175' class='item' id='{$single_quality}' src='{$item_image_url[$single_defindex]}' \>";
-            echo '</div>';
-            echo '<div class="item_page_desc">';
-                if ($single_quality=='strange')
-                {
-                    $rank = tf2_get_strange_kill_rank($single_item_strange_kills);
-                     echo  "<span id='$single_quality'>$rank </span><BR \>";
-                }
-                else echo  "<span id='$single_quality'>$single_quality </span><BR \>";
-                if ($single_item_custom_name!=null) echo "<span style='font-size:25px;' id='{$single_quality}'>\"$single_item_custom_name\"</span><BR \>";
-                else echo "<span  id='{$single_quality}'>$single_item_name </span><BR \>";
-                if ($single_item_custom_desc!=null) echo "<span style='font-size:20px; color : #FFD700;'>\"$single_item_custom_desc\"</span><BR \>";
-                echo "<span style='font-size:20px;' id='{$single_quality}'>ID : $itemid</span><BR \>";
-                if ($single_item_previous_id!=null) echo "<span style='font-size:15px;' id='{$single_quality}'>Previous ID : $single_item_previous_id</span><BR \>";
-                if ($single_item_strange_kills!=null) echo "<span id='item_desc_strange_kills'>Kills : $single_item_strange_kills</span><BR \>";
-            echo '</div>';
+        if ($single_quality!=null && $item_image_url!=null && $single_defindex!=null){
+            if ($tutorial!=true)echo "<a class='back_button' style='text-decoration:underline;' href='?userid={$steamid}'>&lt;&lt;BACK TO BACKPACK</a><br \>";
+            else echo "<a class='back_button' style='text-decoration:underline;' href='?p=tutorial'>&lt;&lt;BACK TO BACKPACK</a><br \>";
+                echo '<div class="item_page_img">';
+                    echo "<img style='margin-left:10px;' height='175' width='175' class='item' id='{$single_quality}' src='{$item_image_url[$single_defindex]}' \>";
+                echo '</div>';
+                echo '<div class="item_page_desc">';
+                    if ($single_quality=='strange')
+                    {
+                        $rank = tf2_get_strange_kill_rank($single_item_strange_kills);
+                         echo  "<span id='$single_quality'>$rank </span><BR \>";
+                    }
+                    else echo  "<span id='$single_quality'>$single_quality </span><BR \>";
+                    if ($single_item_custom_name!=null) echo "<span style='font-size:25px;' id='{$single_quality}'>\"$single_item_custom_name\"</span><BR \>";
+                    else echo "<span  id='{$single_quality}'>$single_item_name </span><BR \>";
+                    if ($single_item_custom_desc!=null) echo "<span style='font-size:20px; color : #FFD700;'>\"$single_item_custom_desc\"</span><BR \>";
+                    echo "<span style='font-size:20px;' id='{$single_quality}'>ID : $itemid</span><BR \>";
+                    if ($single_item_previous_id!=null) echo "<span style='font-size:15px;' id='{$single_quality}'>Previous ID : $single_item_previous_id</span><BR \>";
+                    if ($single_item_strange_kills!=null) echo "<span id='item_desc_strange_kills'>Kills : $single_item_strange_kills</span><BR \>";
+                echo '</div>';
+        }
+        else echo "<div id='item_dne'>Sorry! This item does not exist! It may have changed IDS - check the <a class='contentLink' href='?userid={$steamid}'>owner's backpack!</a></div>";
             echo '</div>';
         echo '</div>';
+        echo '</div>';
+
         echo '<HR class="item_page" \>';   
+
+}
+
+function render_item_graphs($single_quality,$itemid, $steamid)
+{
+    echo '<div class="graph_sidebar_wrapper clear">';
+    echo '<div class="stat_all">';
+
+    if ($single_quality=='strange')
+    {
+        echo '<div class="title">PERFORMANCE<BR \></div>';
+        echo '<div class="graph_all clear">';
+
+        include_once('scripts/dbconfig.php');
+        $mysqli = new mysqli($host,$username,$password,$db) or die($mysqli->error);
+
+        $query = "SELECT * FROM `items` WHERE `itemid`=$itemid";
+        $result = $mysqli->query($query);
+
+        $check = "SELECT * from user WHERE `steamid`='$_GET[userid]'";
+        $re = $mysqli->query($check);
+        $rows = $re->fetch_assoc();
+        $rows = $re->fetch_assoc();
+
+        $time = date('Ym');
+        $table = "events_$time"; //select from current month's db
+        $data = "SELECT * FROM `$table` WHERE `itemid`=$itemid";
+        $data_re = $mysqli->query($data);
+
+        $track_privacy = 0; //default values for privacy
+        $stat_privacy = 0; //public tracking and stat viewing options
+        $wep_steamid = 0; //manual management of tracking
+
+        if (isset($rows['track_privacy']) && $rows['track_privacy']!=null) $track_privacy = $rows['track_privacy'];
+        if (isset($rows['stat_privacy']) && $rows['stat_privacy']!=null) $stat_privacy = $rows['stat_privacy'];
+        if (isset($rows['steamid']) && $rows['steamid']!=null) $wep_steamid = $rows['steamid'];    
+
+        if ($_GET['userid']==$_SESSION['steamID']) $loggedIn = true;
+        else $loggedIn = false;
+
+        if (isset($_GET['stop']) && $_GET['stop']=='true' && $loggedIn){
+            $del = "DELETE FROM `items` WHERE `itemid`='$itemid'";
+            $mysqli->query($del);
+        }
+        
+        if ($track_privacy==0 && $result->num_rows==0) 
+        {
+            if (isset($_GET['track']) && $_GET['track']=='true')
+            {//track, iff privacy is set to public
+                if ($track_privacy==0 || (isset($_SESSION['steamID']) && $_GET['userid']==$_SESSION['steamID'])){
+                //if track privacy options are public, OR the user is logged in and looking at their own profile
+
+                    //add steamid,itemid to users table
+                    $insert = "INSERT INTO `items` (`id`,`steamid`,`itemid`) VALUES ('','$steamid','$itemid')";
+                    $q = $mysqli->query($insert) or die ($mysqli->error);
+
+                    $update = "UPDATE `item_table` SET `tracked`='1' WHERE item_id='$itemid' AND steam_id='$steamid'";
+                    $k = $mysqli->query($update) or die ($mysqli->error);
+
+                    echo "<span id='no_data'>Item added. I'll be checking this item every hour.</span>";
+                }
+            }else echo "<span id='no_data'>No data available for this item. <a href='?userid={$steamid}&item={$itemid}&track=true'>Start tracking?</a></span>";
+
+        }
+        else if ($data_re->num_rows>0 && $result->num_rows==0){
+            echo "<span id='no_data'>Data exists, but it looks like the user has removed it from being tracked.</span>";
+        }
+        else if (($stat_privacy==0 || $loggedIn) && $result->num_rows>0)
+        {
+            //show graphs
+            echo "<div class='graph_daily_wrapper'>";
+            echo "<div id='graph_24hrs'><h1 style='text-align:center; color:#86b5d9;'>in the last 24 hours<a id='zoom_in_daily'><img style='height:22px;width:22px;float:right;' src='lib/zoom.png' \></a><a id='reset_daily'><img style='height:22px;width:22px;float:right;' src='lib/undo.png' \></a></h1></div>";
+                echo "<div class='graph_daily'><img id='loading' src='lib/spin.gif' />";
+                echo "</div>";
+            echo "</div>";
+            echo "<div class='graph_weekly_wrapper'>";
+            echo "<div id='graph_weekly'><h1 style='text-align:center; color:#d986b5;'>in this month so far<a id='zoom_in_weekly'><img style='height:22px;width:22px;float:right;' src='lib/zoom.png' \></a><a id='reset_weekly'><img style='height:22px;width:22px;float:right;' src='lib/undo.png' \></a></h1></div>";
+                echo "<div class='graph_weekly'><img id='loading' src='lib/spin.gif' />";
+                echo "</div>";
+            echo "</div>";
+
+        }else{
+             echo "<span id='no_data'>Sorry! This user has requested that their data remain private.</span>";
+        }
+        $mysqli->close();
+    }  
+    echo '</div>';
+    echo '</div>';
+    
+    render_sidebar_stats($single_quality, $result, $loggedIn);
+}
+
+function render_sidebar_stats($single_quality, $result, $loggedIn)
+{
+    if ($single_quality=='strange'){
+     echo '<div class="sidebar">';
+       echo "<div id='admin_title'>OPTIONS</div>"; 
+        echo "<ul id='admin_list'>";
+        if ($result->num_rows>0) echo "<li><a href='/?userid={$steamid}&item={$itemid}&stop=true' class='contentLink'>STOP TRACKING ITEM</a></li>";
+        else echo "<li><a href='/?userid={$steamid}&item={$itemid}&track=true' class='contentLink'>START TRACKING ITEM</a></li>";
+       echo "</ul>";
+       if (!$loggedIn && isset($_GET['stop'])) echo "<span id='admin_error'>You're not logged in as the owner!</span>";
+   echo '</div>';
+   echo '<div class="sidebar_stats">';
+       echo "<div id='stat_title'>STATS</div>";
+       echo "<ul id = 'stat_list'>";
+       echo "</ul>";
+   echo '</div>';
+    }
 }
 
 function render_plain_header()
