@@ -243,7 +243,6 @@ function render_item_desc($steamid,$itemid, $single_quality,$item_image_url,$sin
         }    
         echo '</div>';
         echo '</div>';
-        echo '</div>';
 
         echo '<HR class="item_page" \>';   
 
@@ -430,7 +429,7 @@ function render_info_panel($customURL,$steamid,$user_status,$mostplayedgame,$mos
 
 function render_ads()
 {
-echo '<div style="width:80%;height:90px;margin:0px auto;padding:20px;"><div style="width:728px;margin:0px auto;"><script type="text/javascript">
+echo '<div style="min-width:1200px;width:80%;height:90px;margin:0px auto;padding:20px;"><div style="width:728px;margin:0px auto;"><script type="text/javascript">
 <!--
 google_ad_client = "ca-pub-9354358608748913";
 /* Lowerboard */

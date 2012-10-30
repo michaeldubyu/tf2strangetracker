@@ -93,6 +93,8 @@ div.item_desc_all
 
 div.item_wrapper{
     margin-top:10px;
+    margin-left:auto;
+    margin-right:auto;
     width: 80%;
     min-width: 1200px;
 }

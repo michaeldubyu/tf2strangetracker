@@ -138,6 +138,7 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
         }
         render_ads();
         echo '</div>';
+        echo '</div>';
         render_footer();       
 	}
 	else
