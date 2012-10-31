@@ -1179,7 +1179,7 @@ a:hover
 
 #steamid{
     color:#D986B5;
-    width:250px;
+    width:260px;
 }
 
 
@@ -1189,6 +1189,7 @@ a:hover
 
 #weapontype{
     color:#d9aa86;
+    width:200px;
 }
 
 .clear:after {
