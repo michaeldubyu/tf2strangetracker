@@ -10,20 +10,20 @@ function render_profile_header($steamid,$avatar_full,$user_status,$display_name)
 			echo "<h1><a class='contentLink' href='http://steamcommunity.com/profiles/$steamid/'>{$display_name}</a><span id='$user_status'>'S TF2 BACKPACK</span></h1>";
 		echo '</div>';
   		        echo "<div class='nav_control' style='margin-top:20px;'>";
-            echo '<a id="nav_home" href="/" ></a>';
-            echo '<a id="nav_search" href="/" ></a>';
-            echo '<a id="nav_top10" href="/?p=top10" ></a>';
-            echo '<a id="nav_faq" href="/?p=help" ></a>';
-            echo '<a id="nav_refresh" href="javascript:void(0)" onClick="window.location.reload();" ></a>';  	       
+            echo '<a title="Return to the front page." id="nav_home" href="/" ></a>';
+            echo '<a title="Search for a player." id="nav_search" href="/" ></a>';
+            echo '<a title="Check out the top 50 weapons being tracked!" id="nav_top10" href="/?p=top10" ></a>';
+            echo '<a title="Frequently asked stuff." id="nav_faq" href="/?p=help" ></a>';
+            echo '<a title="Force a page refresh." id="nav_refresh" href="javascript:void(0)" onClick="window.location.reload();" ></a>';  	       
     	if (isset($_SESSION['steamID']) && ($_SESSION['steamID']!=null)) {
-            echo "<a id='nav_logout' href='/?logout'></a>";
-            echo '<a id="nav_usercp_loggedin" href="/?p=usercp"></a>';
-            echo "<a id='nav_profile_loggedin' href='/?userid=$_SESSION[steamID]'></a>";
+            echo "<a title='Logout!' id='nav_logout' href='/?logout'></a>";
+            echo '<a title="Go to user control panel." id="nav_usercp_loggedin" href="/?p=usercp"></a>';
+            echo "<a title='Go to your backpack!'  id='nav_profile_loggedin' href='/?userid=$_SESSION[steamID]'></a>";
         }
       	else{
            $genurl = SteamSignIn::genUrl();
-           echo "<a id='nav_usercp' href='$genurl'></a>";
-           echo "<a id='nav_profile' href='$genurl'></a>";
+           echo "<a title='Log in to set your privacy settings!' id='nav_usercp' href='$genurl'></a>";
+           echo "<a title='Log in to go to your profile!' id='nav_profile' href='$genurl'></a>";
 	}
     echo '</div>';
     echo '</div>';
@@ -237,9 +237,11 @@ function render_item_desc($steamid,$itemid, $single_quality,$item_image_url,$sin
             $mysqli_d = mysqli_connect($host,$username,$password,$db);
             $delete_it = "DELETE FROM item_table WHERE item_id = $itemid";
             $delete_i = "DELETE FROM items WHERE itemid = $itemid";
+            $delete_tt = "DELETE FROM items_top_tracked WHERE itemid = $itemid";
             
             mysqli_query($mysqli_d,$delete_it);
             mysqli_query($mysqli_d,$delete_i);
+            mysqli_query($mysqli_d,$delete_tt);
         }    
         echo '</div>';
         echo '</div>';
@@ -364,21 +366,21 @@ function render_plain_header()
 			echo "<span>TF2 STRANGE TRACKER</span>";
 		echo '</div>';
         echo "<div class='nav_control'>";
-            echo '<a id="nav_home" href="/" ></a>';
-            echo '<a id="nav_search" href="/" ></a>';
-            echo '<a id="nav_top10" href="/?p=top10" ></a>';
-            echo '<a id="nav_faq" href="/?p=help" ></a>';
-            echo '<a id="nav_refresh" href="javascript:void(0)" onClick="window.location.reload();" ></a>';  	       
+            echo '<a title="Return to the front page." id="nav_home" href="/" ></a>';
+            echo '<a title="Search for a player." id="nav_search" href="/" ></a>';
+            echo '<a title="Check out the top 50 weapons being tracked!" id="nav_top10" href="/?p=top10" ></a>';
+            echo '<a title="Frequently asked stuff." id="nav_faq" href="/?p=help" ></a>';
+            echo '<a title="Force a page refresh." id="nav_refresh" href="javascript:void(0)" onClick="window.location.reload();" ></a>';  	       
 
     	if (isset($_SESSION['steamID']) && ($_SESSION['steamID']!=null)) {
-            echo "<a id='nav_logout' href='/?logout'></a>";
-            echo '<a id="nav_usercp_loggedin" href="/?p=usercp"></a>';
-            echo "<a id='nav_profile_loggedin' href='/?userid=$_SESSION[steamID]'></a>";
+            echo "<a title='Logout.' id='nav_logout' href='/?logout'></a>";
+            echo '<a title="Go to user control panel." id="nav_usercp_loggedin" href="/?p=usercp"></a>';
+            echo "<a title='Go to your backpack!' id='nav_profile_loggedin' href='/?userid=$_SESSION[steamID]'></a>";
         }
       	else{
            $genurl = SteamSignIn::genUrl();
-           echo "<a id='nav_usercp' href='$genurl'></a>";
-           echo "<a id='nav_profile' href='$genurl'></a>";
+           echo "<a title='Log in to set your privacy settings!' id='nav_usercp' href='$genurl'></a>";
+           echo "<a title='Log in to go to your profile!' id='nav_profile' href='$genurl'></a>";
 	}
         echo "</div>";
     echo '</div>';
@@ -406,7 +408,7 @@ function render_footer()
             $_SESSION['display_name'] = (string) $sd_name;
             $_SESSION['steamID'] = (string) $s_profile->steamID64;
             $_SESSION['last_activity'] = time();
-           echo "<script>window.location = '?id=$_SESSION[steamID]';</script>";
+           echo "<script>window.location = '?userid=$_SESSION[steamID]';</script>";
         }
         else echo "<div id='custom_desc' style = 'font-size:15px; height:25px; margin : 5px 5px 5px 5px;'>That response didn't seem quite right. Please verify your login details!</div>";
     }
