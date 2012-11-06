@@ -38,6 +38,7 @@ if (isset ($_GET['item'])){
             $contrib_data[] = mysqli_fetch_assoc($top_re);
         }       
     }
-    echo json_encode($contrib_data);
+    if (count($contrib_data)<15)echo json_encode($contrib_data);
+    else echo json_encode(array_splice($contrib_data,0,count($contrib_data)-5));
 }
 ?>
