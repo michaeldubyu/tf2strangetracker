@@ -26,8 +26,11 @@ function get_steam_profile_xml($id)
     if (is_numeric($id)) $sXML = download_page($pageNumeric);
     else $sXML = download_page($pageAlpha);
     
-    if ($sXML==false) return null;
-
+    $tries = 0;
+    while ($sXML==null && $tries<5){
+        if (is_numeric($id)) $sXML = download_page($pageNumeric);
+	else $sXML = downloadPage($pageAlpha);
+    }
     $oXML = new SimpleXMLElement($sXML);
   
     if ($oXML!=null)return $oXML;
