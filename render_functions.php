@@ -233,15 +233,21 @@ function render_item_desc($steamid,$itemid, $single_quality,$item_image_url,$sin
         else {
             echo "<div id='item_dne'>Sorry! This item does not exist! It may have changed IDS - check the <a class='contentLink' href='?userid={$steamid}'>owner's backpack!</a></div>";
             include_once('scripts/dbconfig.php');
+        
+            $time = date('Ym');
+            $table = "events_$time"; //select from current month's db
             
             $mysqli_d = mysqli_connect($host,$username,$password,$db);
+
             $delete_it = "DELETE FROM item_table WHERE item_id = $itemid";
             $delete_i = "DELETE FROM items WHERE itemid = $itemid";
             $delete_tt = "DELETE FROM items_top_tracked WHERE itemid = $itemid";
+            $delete_et = "DELETE FROM $table WHERE itemid = $itemid";
             
             mysqli_query($mysqli_d,$delete_it);
             mysqli_query($mysqli_d,$delete_i);
             mysqli_query($mysqli_d,$delete_tt);
+	    mysqli_query($mysqli_d,$delete_et);
         }    
         echo '</div>';
         echo '</div>';
@@ -345,7 +351,11 @@ function render_sidebar_stats($single_quality, $result, $loggedIn)
      echo '<div class="sidebar">';
        echo "<div id='admin_title'>OPTIONS</div>"; 
         echo "<ul id='admin_list'>";
-        if ($result->num_rows>0) echo "<li><a href='/?userid={$steamid}&item={$itemid}&stop=true' class='contentLink'>STOP TRACKING ITEM</a></li>";
+        if ($result->num_rows>0){
+             echo "<li><a href='/?userid={$steamid}&item={$itemid}&stop=true' class='contentLink'>STOP TRACKING ITEM</a></li>";
+             echo "<li><a id='download_daily_data' class='contentLink'>DOWNLOAD DAILY DATA AS CSV</a></li>";            
+             echo "<li><a id='download_weekly_data' class='contentLink'>DOWNLOAD WEEKLY DATA AS CSV</a></li>";            
+        }
         else echo "<li><a href='/?userid={$steamid}&item={$itemid}&track=true' class='contentLink'>START TRACKING ITEM</a></li>";
        echo "</ul>";
        if (!$loggedIn && isset($_GET['stop'])) echo "<span id='admin_error'>You're not logged in as the owner!</span>";
@@ -431,18 +441,22 @@ function render_info_panel($customURL,$steamid,$user_status,$mostplayedgame,$mos
 
 function render_ads()
 {
-echo '<div style="min-width:1200px;width:80%;height:90px;margin:0px auto;padding:20px;"><div style="width:728px;margin:0px auto;"><script type="text/javascript">
-<!--
-google_ad_client = "ca-pub-9354358608748913";
-/* Lowerboard */
-google_ad_slot = "8678489508";
-google_ad_width = 728;
-google_ad_height = 90;
-//-->
-</script>
-<script type="text/javascript"
-src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
-</script></div></div>';
+echo '<div style="min-width:1200px;width:80%;height:90px;margin:0px auto;padding:20px;">
+        <div style="width:728px;margin:0px auto;">
+            <script type="text/javascript">
+                <!--
+                google_ad_client = "ca-pub-9354358608748913";
+                /* Lowerboard */
+                google_ad_slot = "8678489508";
+                google_ad_width = 728;
+                google_ad_height = 90;
+                //-->
+            </script>
+            <script type="text/javascript"
+                src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+            </script>
+        </div>
+     </div>';
 }
 
 ?>

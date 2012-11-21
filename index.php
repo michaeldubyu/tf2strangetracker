@@ -16,21 +16,21 @@ if (isset($_GET['logout'])){
 <!DOCTYPE html>
 <html>
 	<head>
-<script type="text/javascript">
-
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-35707806-1']);
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-
-</script>
         <META http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="description" content="Team Fortress 2 Strange Weapon Tracking Website!" />
+        <script type="text/javascript">
+        
+          var _gaq = _gaq || [];
+          _gaq.push(['_setAccount', 'UA-35707806-1']);
+          _gaq.push(['_trackPageview']);
+        
+          (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+          })();
+        
+        </script>
 		<link rel="stylesheet" type="text/css" href="tf2_tracker.css" />
         <link rel="stylesheet" type="text/css" href="lib/gritter/css/jquery.gritter.css" />
         <script type="text/javascript" src="lib/jquery-1.7.2.min.js"></script>
@@ -44,6 +44,7 @@ if (isset($_GET['logout'])){
         <script type="text/javascript" src="lib/tutorial_item.js"></script>
         <script type="text/javascript" src="lib/gritter/js/jquery.gritter.js"></script>
         <script type="text/javascript" src="lib/twitter.js"></script>
+        <script type="text/javascript" src="lib/jquery.dataTables.js"></script>
         <!--[if IE]><script type="text/javascript" src="lib/flot/excanvas.js"></script><![endif]-->
 	</head>
 	
@@ -72,20 +73,28 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
     if (!ctype_alnum(str_replace($valid,'',$id))) $profile = null;
     else $profile = get_steam_profile_xml($id);
 
+    if (!isset($profile->steamID64) || $profile->steam==null){
+        //try to retrieve profile info from cache
+        $f = "{$_SERVER['DOCUMENT_ROOT']}/profiles/{$id}_profile.xml";
+        if (file_exists($f)){
+            $profile = simplexml_load_file($f);
+        }
+    }
+
     if (isset($profile->steamID64) && $profile->steamID64 != null) 
     {
-		$steamid = $profile->steamID64;
+	$steamid = $profile->steamID64;
         $backpack = get_tf2_backpack_xml($steamid);
 
-		if (isset($backpack->status)) $status=$backpack->status;
-		else $web_api_status=false;
+	if (isset($backpack->status)) $status=$backpack->status;
+	else $web_api_status=false;
 
-		if ($web_api_status==true && $status!='15')
-		{
+	if ($web_api_status==true && $status!='15')
+	{
             $name = simplexml_load_string($profile->steamID->asXML(),null,LIBXML_NOCDATA);
-			$display_name = strtoupper($name);
-			$user_status = strtolower(simplexml_load_string($profile->onlineState->asXML(),null,LIBXML_NOCDATA));
-			$avatar_full = simplexml_load_string($profile->avatarMedium->asXML(), null, LIBXML_NOCDATA);
+       	    $display_name = strtoupper($name);
+	    $user_status = strtolower(simplexml_load_string($profile->onlineState->asXML(),null,LIBXML_NOCDATA));
+	    $avatar_full = simplexml_load_string($profile->avatarMedium->asXML(), null, LIBXML_NOCDATA);
 			
             render_profile_header($steamid,$avatar_full,$user_status,$display_name);	
 
@@ -118,9 +127,6 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
 				@$single_item_strange_kills = $item_strange_kills[$itemid];
                 @$single_item_previous_id = $item_previous_id[$itemid];
                   
-                $single_item_name = str_replace('The ','',$single_item_name);
-                $single_item_name = str_replace('Upgradeable TF_WEAPON_','',$single_item_name);
-
                 echo '<div class="item_page_all clear">';
 
                 render_item_desc($steamid,$itemid, $single_quality,$item_image_url,$single_defindex, $single_item_strange_kills,$single_item_name, $single_item_custom_name,$single_item_custom_desc,$single_item_previous_id,$single_item_strange_kills, false);         
@@ -136,10 +142,12 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
                 save_xml($profile,"/profiles/{$steamid}_profile.xml"); 
             }
         }
-        render_ads();
-        echo '</div>';
-        echo '</div>';
-        render_footer();       
+        else{ 
+            render_plain_header();
+            echo "<p id='error'>Permission denied to view this backpack - check your permissions!</p>";
+            render_ads();
+            render_footer();       
+        }
 	}
 	else
     {
@@ -168,7 +176,7 @@ else if (isset($_GET['p']) && $_GET['p'] != '' && $_GET['p'] != null)
         $time = date('Ym');
         $table = "events_$time"; //select from current month's db
 
-        $query_t = "SELECT items_top_tracked.itemid, items_top_tracked.steamid, items_top_tracked.value, item_table.item_name, item_table.owner_name FROM items_top_tracked LEFT JOIN item_table ON items_top_tracked.itemid = item_table.item_id ORDER BY value DESC LIMIT 0,25";
+        $query_t = "SELECT DISTINCT items_top_tracked.itemid, items_top_tracked.steamid, items_top_tracked.value, item_table.item_name, item_table.owner_name FROM items_top_tracked LEFT JOIN item_table ON items_top_tracked.itemid = item_table.item_id GROUP BY steamid ORDER BY value DESC LIMIT 0,25";
         $query_t = mysqli_real_escape_string($mysqli_t,$query_t);
         
         $top25_data = array();
@@ -180,7 +188,7 @@ else if (isset($_GET['p']) && $_GET['p'] != '' && $_GET['p'] != null)
                 $top25_data[] = $row_top10;
             }
         }	
-        $query_right = "SELECT items_top_tracked.itemid, items_top_tracked.steamid, items_top_tracked.value, item_table.item_name, item_table.owner_name FROM items_top_tracked LEFT JOIN item_table ON items_top_tracked.itemid = item_table.item_id ORDER BY value DESC LIMIT 25,25";
+        $query_right = "SELECT DISTINCT items_top_tracked.itemid, items_top_tracked.steamid, items_top_tracked.value, item_table.item_name, item_table.owner_name FROM items_top_tracked LEFT JOIN item_table ON items_top_tracked.itemid = item_table.item_id GROUP BY steamid ORDER BY value DESC LIMIT 25,25";
         $query_right = mysqli_real_escape_string($mysqli_t,$query_right);
         
         $top25_right_data = array();
@@ -201,8 +209,8 @@ else if (isset($_GET['p']) && $_GET['p'] != '' && $_GET['p'] != null)
             echo "<div id='top10_title'>TOP 50 WEAPONS CURRENTLY BEING TRACKED</div><BR \>";
             echo "<div class='top10_table_wrapper clear'>";
             echo "<div class='top10_left'>";
-                echo "<table class='top10'><tbody>";
-                echo "<tr><td id='rank'>rank</td><td id='itemid'>itemid</td><td id='kills'>kills</td><td id='weapontype'>weapon type</td><td id='steamid'>name</td></tr>";
+                echo "<table class='top10'>";
+                echo "<thead><tr><td id='rank'>rank</td><td id='itemid'>itemid</td><td id='kills'>kills</td><td id='weapontype'>weapon type</td><td id='steamid'>name</td></tr></thead><tbody>";
                 $rank = 1;
                 foreach ($top25_data as $wep)
                 {
@@ -222,8 +230,8 @@ else if (isset($_GET['p']) && $_GET['p'] != '' && $_GET['p'] != null)
                 echo "</tbody></table>";
             echo "</div>";
             echo "<div class='top10_right'>";
-                echo "<table class='top10'><tbody>";
-                echo "<tr><td id='rank'>rank</td><td id='itemid'>itemid</td><td id='kills'>kills</td><td id='weapontype'>weapon type</td><td id='steamid'>name</td></tr>";
+                echo "<table class='top10'>";
+                echo "<thead><tr><td id='rank'>rank</td><td id='itemid'>itemid</td><td id='kills'>kills</td><td id='weapontype'>weapon type</td><td id='steamid'>name</td></tr></thead><tbody>";
                 foreach ($top25_right_data as $wep)
                 {
                     echo "<tr>";
@@ -308,7 +316,7 @@ else if (isset($_GET['p']) && $_GET['p'] != '' && $_GET['p'] != null)
             else if (isset($db_track_all) && $db_track_all==1){
                 echo '<input type="radio" name="track_all" checked="checked" value="1" />I want to have all my strange weapons, current and future, to be tracked automatically. (OPTIONAL) <BR \><BR \>';
             }
-    //1 for track_all means yes all weapons will be tracked
+            //1 for track_all means yes all weapons will be tracked
             echo '<input id="sub" type="submit" value="Save Settings" />';
             echo '</form>';
         echo '</div>';
@@ -342,7 +350,14 @@ else
                 </form>";
         echo '</div>'; 
             include_once('scripts/dbconfig.php');
-            $mysqli_f = mysqli_connect($host,$username,$password,$db);
+       //render_ads();
+    echo '<div class="front_stats_all clear">';
+		echo '<h3>STRANGE WEAPON KILL BREAKDOWN<BR \>WEAPONS UNDER 100,000 KILLS</h3>';
+        //echo '<div class="all_graphs">';
+            echo '<div class="contrib_wrapper clear"><div class="graph_wep_performance"></div><BR \>';
+            echo '<div class="top10_contrib"><img id="loading" src="lib/spin.gif" /><h3 style="margin-top:150px;">Hover over each slice to see details!</h3><table class="contrib_table"></table></div></div>';
+	echo '</div>';
+          $mysqli_f = mysqli_connect($host,$username,$password,$db);
             if(mysqli_connect_errno()) echo mysqli_connect_error();
             
             $query_f = "SELECT COUNT(DISTINCT(`steamid`)) FROM `items`";
@@ -366,14 +381,9 @@ else
     //echo "To date have checked over unique $backpack_num backpacks from the Steam Community.";
     echo "</div>";
 
-    //render_ads();
-    echo '<div class="front_stats_all clear">';
-		echo '<h3>TOP STRANGE WEAPON KILLS LOGGED<BR \>BREAKDOWN AND CONTRIBUTORS</h3>';
-        //echo '<div class="all_graphs">';
-            echo '<div class="contrib_wrapper clear"><div class="graph_wep_performance"></div><BR \>';
-            echo '<div class="top10_contrib"><img id="loading" src="lib/spin.gif" /><h3 style="margin-top:150px;">Hover over each slice to see details!</h3><table class="contrib_table"></table></div></div>';
-	echo '</div>';
-    echo "<div class='twitter_container'><h2><div id='jstweets'><img id='twitter_img' src='lib/twitter.png' \><a style='color : #7eb3cd;' href='http://twitter.com/tf2stranges'>FROM TWITTER</a> - <a href='https://twitter.com/intent/user?screen_name=tf2stranges'>FOLLOW @TF2STRANGES</a><BR \><BR \></h2></div></div>";
+  
+
+ echo "<div class='twitter_container'><h2><div id='jstweets'><img id='twitter_img' src='lib/twitter.png' \><a style='color : #7eb3cd;' href='http://twitter.com/tf2stranges'>FROM TWITTER</a> - <a href='https://twitter.com/intent/user?screen_name=tf2stranges'>FOLLOW @TF2STRANGES</a><BR \><BR \></h2></div></div>";
     render_ads();
     echo '</div>';
 

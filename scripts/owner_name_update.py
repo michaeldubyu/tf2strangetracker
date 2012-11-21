@@ -13,7 +13,7 @@ from threading import Thread
 #to download the xml of the profile use this subroutine
 def get_profile_xml(steamid):
 
-    url = "http://steamcommunity.com/profiles/"+steamid+"/?xml=1"
+    url = "http://steamcommunity.com/profiles/"+steamid+"/?xml=1&l=english"
     c = pycurl.Curl()
     c.setopt(c.URL,url)
     c.setopt(c.CONNECTTIMEOUT, 10)
@@ -22,9 +22,12 @@ def get_profile_xml(steamid):
     c.setopt(pycurl.NOSIGNAL, 1)
     b = StringIO.StringIO()
     c.setopt(pycurl.WRITEFUNCTION, b.write)
-    c.perform()
-    return b.getvalue()
-
+    for i in xrange(3):
+        try:
+             c.perform()
+             return b.getvalue()
+        except Exception, e:
+             pass
 
 def update_name_thread(start,end,data):
     month = time.strftime('%Y%m')
@@ -44,12 +47,11 @@ def update_name_thread(start,end,data):
         for row in data:
             steamid = str(row[0])
             prof_xml = get_profile_xml(steamid)
-            profile = et.fromstring(prof_xml)
-            steam_name = profile.findtext('steamID')
-            steam_name.encode('utf-8')
-
-            cur.execute("UPDATE item_table SET `owner_name`=%s WHERE `steam_id`=%s" ,(steam_name,steamid))
-            con.commit()
+	    profile = et.fromstring(prof_xml)
+	    steam_name = profile.findtext('steamID')
+	    steam_name.encode('utf-8')
+	    cur.execute("UPDATE item_table SET `owner_name`=%s WHERE `steam_id`=%s" ,(steam_name,steamid))
+	    con.commit()
 
     except mdb.Error, e:
 

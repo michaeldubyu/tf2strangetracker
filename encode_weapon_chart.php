@@ -5,7 +5,7 @@
     $mysqli2 = mysqli_connect($host,$username,$password,$db);
     if(mysqli_connect_errno()) echo mysqli_connect_error();
         
-    $weapons = "SELECT * FROM `items_top_tracked` ORDER BY `value` DESC LIMIT 100";
+    $weapons = "SELECT * FROM `items_top_tracked` WHERE value < 100000 ORDER BY `value` DESC LIMIT 100";
     $weapons_q = mysqli_real_escape_string($mysqli2,$weapons);
     
     $top_data = array();
