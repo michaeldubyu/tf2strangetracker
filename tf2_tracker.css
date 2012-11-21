@@ -265,7 +265,7 @@ div.top10_contrib
 }
 
 
-.top10_contrib h3
+ .top10_contrib h3  
 {
     text-align:center;
     font-size:25px;
@@ -273,6 +273,21 @@ div.top10_contrib
     margin:0 !important;
     padding:0 !important!;
 }
+
+.top10_contrib h3 a  
+{
+    text-align:center;
+    font-size:25px;
+    color: #FFAA42;
+}
+
+.top10_contrib h3 a:hover  
+{
+    text-align:center;
+    font-size:25px;
+    color: #D9AA96;
+}
+
 
 div.contrib_wrapper{
     width:80%;
@@ -293,6 +308,8 @@ div.contrib_wrapper{
     margin-left:15px;
     padding-left : 15px;
 }
+
+
 
 .twitter_container{
     min-width:950px;
@@ -830,6 +847,14 @@ div.sortdrop
 	border-radius: 8px;
 	text-align: Center;
     width: 800px;
+}
+
+table.top10 #weapontype a{
+	color : #D9AA96;
+}
+
+table.top10 #weapontype a:hover{
+	color : #c7814c;
 }
 
 div.top10_left

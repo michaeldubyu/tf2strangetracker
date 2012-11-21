@@ -193,6 +193,7 @@ else if (isset($_GET['p']) && $_GET['p'] != '' && $_GET['p'] != null)
         
         $top25_right_data = array();
 
+
         if ($result_top25_right=mysqli_query($mysqli_t,$query_right))
         {		
             while ($row_top25_right = mysqli_fetch_assoc($result_top25_right))
@@ -205,7 +206,9 @@ else if (isset($_GET['p']) && $_GET['p'] != '' && $_GET['p'] != null)
         mysqli_free_result($result_top10);
         mysqli_free_result($result_top25_right);
         
-        echo "<div class='top10_wrapper clear'>";
+	$wiki_url = "http://wiki.teamfortress.com/wiki/";
+        
+	echo "<div class='top10_wrapper clear'>";
             echo "<div id='top10_title'>TOP 50 WEAPONS CURRENTLY BEING TRACKED</div><BR \>";
             echo "<div class='top10_table_wrapper clear'>";
             echo "<div class='top10_left'>";
@@ -220,8 +223,12 @@ else if (isset($_GET['p']) && $_GET['p'] != '' && $_GET['p'] != null)
                     {
                         if ($key=='steamid') $steamid = $value;
                         if ($key=='itemid') echo "<td><a href='?userid=$wep[steamid]&item=$value'>$value</a></td>";
-                        if ($key=='item_name') echo "<td id='weapontype'>$value</td>";
-                        if ($key=='value') echo "<td id='kills'>$value</td>";
+                        if ($key=='item_name'){
+				$item_url = strtolower(str_replace(" ","_",$value));
+				$item_url = "{$wiki_url}{$item_url}";
+				echo "<td id='weapontype'><a href='$item_url'>$value</a></td>";
+                        }
+			if ($key=='value') echo "<td id='kills'>$value</td>";
                         if ($key=='owner_name') echo "<td><a href='?userid=$steamid'>$value</a></td>";
                     }
                     echo "</tr>";
@@ -240,7 +247,11 @@ else if (isset($_GET['p']) && $_GET['p'] != '' && $_GET['p'] != null)
                     {
                         if ($key=='steamid') $steamid = $value;
                         if ($key=='itemid') echo "<td><a href='?userid=$wep[steamid]&item=$value'>$value</a></td>";
-                        if ($key=='item_name') echo "<td id='weapontype'>$value</td>";
+                        if ($key=='item_name'){
+				$item_url = strtolower(str_replace(" ","_",$value));
+				$item_url = "{$wiki_url}{$item_url}";
+				echo "<td id='weapontype'><a href='$item_url'>$value</a></td>";
+                        }
                         if ($key=='value') echo "<td id='kills'>$value</td>";
                         if ($key=='owner_name') echo "<td><a href='?userid=$steamid'>$value</a></td>";
                     }
