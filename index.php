@@ -337,17 +337,20 @@ else
 {
     include ("functions.php");
     include_once("steamsignin.php");
-    if (!isset($_SESSION['steamID'])) $genurl = SteamSignIn::genUrl();
-    else $genurl = "?userid=$_SESSION[steamID]";
+    if (!isset($_SESSION['steamID'])){
+	 $genurl = SteamSignIn::genUrl();
+         $usermsg = "Enter a Steam ID, Community ID, or <a href='{$genurl}' class='contentLink'>Log In!</a>";
+   }else {
+        $usermsg = "Thanks for logging in, {$_SESSION[display_name]}!";
+   }
 	render_plain_header();
 	echo '<div class="form clear">';
 		echo "<div id = 'form'>
 				 <form action='' id='formstyle' method='GET'>
-					 WELCOME! FIRST TIME?<BR \><BR \>
+					 WELCOME! <BR \><BR \>
 					 <input size='50' type='text' style='text-align:center;background:#2D2828;color:#808080; border:1px solid;' name='userid' id='userid' />
-					 <BR \><BR \>
-					 Enter a Steam ID, Community ID, or <a href='$genurl' class='contentLink'>Log In!</a>
-                </form>";
+					 <BR \><BR \>";
+		echo "{$usermsg}</form>";
         echo '</div>'; 
             include_once('scripts/dbconfig.php');
        //render_ads();
