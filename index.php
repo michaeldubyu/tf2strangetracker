@@ -145,7 +145,7 @@ if (isset($_GET['userid']) && $_GET['userid'] != '' && $_GET['userid'] != null)
         else{ 
             render_plain_header();
             echo "<p id='error'>Permission denied to view this backpack - check your permissions!</p>";
-            render_ads();
+            //render_ads();
             render_footer();       
         }
 	}
@@ -261,7 +261,7 @@ else if (isset($_GET['p']) && $_GET['p'] != '' && $_GET['p'] != null)
                 echo "</tbody></table>";
            echo "</div>";
         echo "</div>";            
-        render_ads();
+        //render_ads();
         echo "</div>";
         render_footer();
     }
@@ -331,7 +331,7 @@ else if (isset($_GET['p']) && $_GET['p'] != '' && $_GET['p'] != null)
             echo '<input id="sub" type="submit" value="Save Settings" />';
             echo '</form>';
         echo '</div>';
-       render_ads(); 
+       //render_ads(); 
        render_footer();
 
         if ((isset($_POST['stat_privacy']) || isset($_POST['track_privacy']) || isset($_POST['track_all'])))
@@ -366,7 +366,7 @@ else
             include_once('scripts/dbconfig.php');
        //render_ads();
     echo '<div class="front_stats_all clear">';
-		echo '<h3>STRANGE WEAPON KILL BREAKDOWN<BR \>WEAPONS UNDER 100,000 KILLS</h3>';
+		echo '<h3>CURRENT STRANGE WEAPON KILL BREAKDOWN</h3>';
         //echo '<div class="all_graphs">';
             echo '<div class="contrib_wrapper clear"><div class="graph_wep_performance"></div><BR \>';
             echo '<div class="top10_contrib"><img id="loading" src="lib/spin.gif" /><h3 style="margin-top:150px;">Hover over each slice to see details!</h3><table class="contrib_table"></table></div></div>';
@@ -398,7 +398,7 @@ else
   
 
  echo "<div class='twitter_container'><h2><div id='jstweets'><img id='twitter_img' src='lib/twitter.png' \><a style='color : #7eb3cd;' href='http://twitter.com/tf2stranges'>FROM TWITTER</a> - <a href='https://twitter.com/intent/user?screen_name=tf2stranges'>FOLLOW @TF2STRANGES</a><BR \><BR \></h2></div></div>";
-    render_ads();
+    //render_ads();
     echo '</div>';
 
     render_footer();

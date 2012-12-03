@@ -877,6 +877,7 @@ div.top10_wrapper
     background: #1a1a1a;
     padding-top:20px;
     margin:0px auto;
+    margin-bottom: 20px;
 }
 
 div.top10_table_wrapper{
@@ -894,7 +895,7 @@ table.top10
     font-size:15px;
 	border-radius: 8px;
 	background: #2D2828;
-    height:645px;
+    height:700px;
 }
 
 div.ads

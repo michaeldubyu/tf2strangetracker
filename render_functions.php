@@ -342,10 +342,10 @@ function render_item_graphs($single_quality,$itemid, $steamid)
     echo '</div>';
     echo '</div>';
     
-    render_sidebar_stats($single_quality, $result, $loggedIn);
+    render_sidebar_stats($steamid, $itemid,$single_quality, $result, $loggedIn);
 }
 
-function render_sidebar_stats($single_quality, $result, $loggedIn)
+function render_sidebar_stats($steamid, $itemid, $single_quality, $result, $loggedIn)
 {
     if ($single_quality=='strange'){
      echo '<div class="sidebar">';

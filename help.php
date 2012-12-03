@@ -39,7 +39,7 @@
 
         echo "</div>";
         //render_ads();
-    render_ads();
+    //render_ads();
     echo "</div>";        
 
     render_footer();
