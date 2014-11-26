@@ -35,8 +35,7 @@ def update_name_thread(start,end,data):
 
     con = None
     try:
-        con = mdb.connect('localhost', 'geogaddi_tf2db',
-           'h1myn4meISroot', 'geogaddi_tf2db');
+    	// TODO : replace connect with credentials
         con.set_character_set('utf8')
         cur = con.cursor()
         cur.execute('SET NAMES utf8;')
