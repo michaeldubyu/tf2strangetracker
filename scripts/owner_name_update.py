@@ -65,8 +65,7 @@ def update_name_thread(start,end,data):
 #where program actually starts
 con = None
 try:
-    con = mdb.connect('localhost', 'geogaddi_tf2db','h1myn4meISroot', 'geogaddi_tf2db');
-
+    // fill in with proper creds
     cur = con.cursor()
     cur.execute("SELECT DISTINCT(`steam_id`) FROM `item_table`")
 
