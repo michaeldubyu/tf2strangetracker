@@ -17,8 +17,7 @@ key = "E952EF69C4972394EF63800AC3F40C07"
 
 con = None
 try:
-    con = mdb.connect('localhost', 'geogaddi_tf2db',
-       'h1myn4meISroot', 'geogaddi_tf2db');
+    // con needs to be setup
     con.set_character_set('utf8')
     cur = con.cursor()
     cur.execute('SET NAMES utf8;')
