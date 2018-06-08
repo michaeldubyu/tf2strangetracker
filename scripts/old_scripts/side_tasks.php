@@ -58,7 +58,6 @@ if(!Thread::available()){
 //$schema = get_tf2_schema_xml($steamid);
 //save_xml($schema,"schema.xml");
 
-$mysqli_c = mysqli_connect('localhost','geogaddi_tf2db','h1myn4meISroot','geogaddi_tf2db');
 if(mysqli_connect_errno()) echo mysqli_connect_error();
 
 $query = "SELECT * from items";
