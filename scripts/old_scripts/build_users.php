@@ -8,7 +8,6 @@ include ("{$_SERVER['DOCUMENT_ROOT']}/whats/functions.php");
 //////hash their current backpack, if different vs existing or doesn't exist,
 ////////add to db
 
-$mysqli = mysqli_connect('localhost','root','h1myn4meISroot','tf2db');
 if(mysqli_connect_errno()) echo mysqli_connect_error();
 
 $query = "SELECT steamid FROM `items` GROUP BY steamid";
