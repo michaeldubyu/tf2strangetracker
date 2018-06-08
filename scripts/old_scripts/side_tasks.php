@@ -4,7 +4,6 @@ require_once("../../webapps/htdocs/thread.php");
 include ("../../webapps/htdocs/functions.php");
 
 function update_kills($lower){
-    $mysqli = mysqli_connect('localhost','geogaddi_tf2db','h1myn4meISroot','geogaddi_tf2db');
     if(mysqli_connect_errno()) echo mysqli_connect_error();
 
     $time = date('Ym');
