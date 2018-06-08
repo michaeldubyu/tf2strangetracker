@@ -1,7 +1,6 @@
 <?php
 //update item_table with all stranges that are being tracked
 
-$mysqli = mysqli_connect('localhost','root','h1myn4meISroot','tf2db');
 $query = "SELECT * FROM `items`";
 
 $tracked = array();
