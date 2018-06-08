@@ -1,5 +1,4 @@
 <?php
-	$mysqli_t = mysqli_connect('localhost','geogaddi_tf2db','h1myn4meISroot','geogaddi_tf2db');
 	if(mysqli_connect_errno()) echo mysqli_connect_error();
 	$time = date('Ym');
 	$table = "events_$time"; //select from current month's db
