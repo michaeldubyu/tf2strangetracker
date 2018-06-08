@@ -13,7 +13,7 @@ function get_string_between($string, $start, $end){
     return substr($string,$ini,$len);
 }
 
-	/*$mysqli_t = mysqli_connect('localhost','root','h1myn4meISroot','tf2db');
+	/*
 	if(mysqli_connect_errno()) echo mysqli_connect_error();
 	$time = date('Ym');
 	$table = "events_$time"; //select from current month's db
